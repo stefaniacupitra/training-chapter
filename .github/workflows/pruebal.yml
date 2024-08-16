@@ -21,13 +21,13 @@ jobs:
 
   job2:
     name: ejecucion exitosa
-    runs-on: ubuntu-latest
     needs: job1
+    runs-on: ubuntu-latest
     steps:
       - name: verificar el workflow
         run: |
           if [ "${{ needs.job1.outputs.output1 }}" -gt 10 ]; then
-            echo " ${{ needs.job1.outputs.output1 }} el resultado de la suma es mayor a 10"
+            echo "La suma es mayor a 10."
           else
-            echo "el resultado de la suma es menor o igual a 10"
+            echo "La suma es menor o igual a 10."
           fi
