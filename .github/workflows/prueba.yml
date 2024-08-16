@@ -8,11 +8,15 @@ on:
 jobs:
   job1:
     name: sumar dos numeros
+    outputs:
+      resultado: ${{ steps.step1.outputs.suma }}
     runs-on: ubuntu-latest
     steps:
       - name: Configurar variables de entorno
+        id: step1
         run: |
-          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))" >> $GITHUB_OUTPUT
+          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"
+          echo "suma=$SUMA" >> "$GITHUB_OUTPUT"
 
       - name: Mostrar el resultado de la suma
         run: echo "El resultado de la suma es ${{ env.SUMA }}"
