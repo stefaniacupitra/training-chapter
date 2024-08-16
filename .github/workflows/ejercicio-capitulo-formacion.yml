@@ -19,6 +19,7 @@ on:
     branches:
       - test/**
 
+
 #JOBS
 jobs:
   #JOB 1
@@ -37,6 +38,7 @@ jobs:
           RESULTADO=$((${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }}))
           echo "resultado=$RESULTADO" >> "$GITHUB_OUTPUT"
           echo "resultado de la suma es: $RESULTADO"
+
 
   #JOB 2
   validador:
