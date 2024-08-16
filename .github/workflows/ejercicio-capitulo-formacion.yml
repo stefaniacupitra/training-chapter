@@ -32,11 +32,9 @@ jobs:
       - name: imprimir resultado de la Suma
         id: suma
         run: | #SHELL
-          numero1=2
-          numero2=9
           echo "numero 1: ${{ vars.NUMERO_UNO }}"
           echo "numero 2: ${{ vars.NUMERO_DOS }}"
-          RESULTADO=$(($numero1 + $numero2))
+          RESULTADO=((${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }}))
           echo "resultado=$RESULTADO" >> "$GITHUB_OUTPUT"
           echo "resultado de la suma es: $RESULTADO"
   
