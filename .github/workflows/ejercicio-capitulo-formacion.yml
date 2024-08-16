@@ -11,7 +11,7 @@
 #Los steps y los jobs tienen un nombre
 #El workflow es claro, entendible y efectivo
 
-name: ejericio-capitulo-formacion
+name: suma-con-validacion
 
 #EVENTO
 on:
