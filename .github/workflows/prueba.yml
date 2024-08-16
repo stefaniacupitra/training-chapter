@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Configurar variables de entorno
         run: |
-          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))" >> $GITHUB_ENV
+          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"
 
       - name: Mostrar el resultado de la suma
         run: echo "El resultado de la suma es ${{ env.SUMA }}"
