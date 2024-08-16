@@ -32,8 +32,8 @@ jobs:
       - name: imprimir resultado de la Suma
         id: suma
         run: | #SHELL
-          numero1=15
-          numero2=1
+          numero1=2
+          numero2=9
           echo "numero 1: $numero1"
           echo "numero 2: $numero2"
           RESULTADO=$(($numero1 + $numero2))
