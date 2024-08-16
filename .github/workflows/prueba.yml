@@ -21,7 +21,7 @@ jobs:
 
   job2:
     name: validar suma
-    needs: suma dos numeros
+    needs: job1
     runs-on: ubuntu-latest
     steps:
       - name: Validar si la suma es mayor a 10
