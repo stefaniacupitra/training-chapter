@@ -1,28 +1,30 @@
-name: ejericio-capitulo-formacion
+name: suma-numeros
 
 on:
   push:
     branches:
-      - test/**
+      - test/pipeline
 
 jobs:
   job1:
     name: suma numeros
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.resultado.outputs.SUMA }}
     steps:
-      - name: imprimir resultado de la Suma
+      - name: resultado
         run: |
-          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"
+          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"  >> "$GITHUB_OUTPUT"
           echo "El resultado de la suma es $SUMA"
 
   job2:
     name: ejecucion exitosa
     runs-on: ubuntu-latest
+    needs: job1
     steps:
       - name: verificar el workflow
         run: |
           if [ $SUMA -gt 10 ]; then
-            echo "el resultado de la suma es mayor a 10"
+            echo " ${{ needs.resultado.outputs.SUMA }} el resultado de la suma es mayor a 10"
           else
             echo "el resultado de la suma es menor o igual a 10"
-          fi
