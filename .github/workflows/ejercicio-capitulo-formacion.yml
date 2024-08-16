@@ -47,7 +47,6 @@ jobs:
     steps:
       - name: verificar si es mayor o menor/igual
         run: | #SHELL
-          echo "${{ needs.suma.outputs.resultado }}"
           if [ ${{ needs.suma.outputs.resultado }} -gt 10 ]; then
             echo "el resultado de la suma de ${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }} es ${{ needs.suma.outputs.resultado }}, por lo tanto, es mayor que 10."
           else
