@@ -32,9 +32,9 @@ jobs:
       - name: imprimir resultado de la Suma
         id: suma
         run: | #SHELL
-          echo "numero 1: ${{ vars.NUMERO_UNO }}"
-          echo "numero 2: ${{ vars.NUMERO_DOS }}"
-          RESULTADO=$((${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }}))
+          echo "numero 1: ${{ vars.A }}"
+          echo "numero 2: ${{ vars.B }}"
+          RESULTADO=$((${{ vars.A }} + ${{ vars.B }}))
           echo "resultado=$RESULTADO" >> "$GITHUB_OUTPUT"
           echo "resultado de la suma es: $RESULTADO"
 
@@ -48,7 +48,7 @@ jobs:
       - name: verificar si es mayor o menor/igual
         run: | #SHELL
           if [ ${{ needs.suma.outputs.resultado }} -gt 10 ]; then
-            echo "el resultado de la suma de ${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }} es ${{ needs.suma.outputs.resultado }}, por lo tanto, es mayor que 10."
+            echo "el resultado de la suma de ${{ vars.A }} + ${{ vars.B }} es ${{ needs.suma.outputs.resultado }}, por lo tanto, es mayor que 10."
           else
-            echo "el resultado de la suma de ${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }} es ${{ needs.suma.outputs.resultado }}, por lo tanto, es menor/igual que 10."
+            echo "el resultado de la suma de ${{ vars.A }} + ${{ vars.B }} es ${{ needs.suma.outputs.resultado }}, por lo tanto, es menor/igual que 10."
           fi
