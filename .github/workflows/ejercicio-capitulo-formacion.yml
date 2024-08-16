@@ -34,7 +34,7 @@ jobs:
         run: | #SHELL
           echo "numero 1: ${{ vars.NUMERO_UNO }}"
           echo "numero 2: ${{ vars.NUMERO_DOS }}"
-          RESULTADO=((${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }}))
+          RESULTADO=$((${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }}))
           echo "resultado=$RESULTADO" >> "$GITHUB_OUTPUT"
           echo "resultado de la suma es: $RESULTADO"
   
