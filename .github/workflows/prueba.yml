@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Validar si la suma es mayor a 10
         run: |
-          if [ ${{ env.SUMA }} -gt 10 ]; then
+          if [ "${{ needs.job1.outputs.suma }}" -gt 10 ]; then
             echo "La suma es mayor a 10."
           else
             echo "La suma es menor o igual a 10."
