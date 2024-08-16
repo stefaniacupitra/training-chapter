@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Configurar variables de entorno
         run: |
-          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"
+          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))" >> $GITHUB_OUTPUT
 
       - name: Mostrar el resultado de la suma
         run: echo "El resultado de la suma es ${{ env.SUMA }}"
@@ -21,6 +21,7 @@ jobs:
 
   job2:
     name: validar suma
+    needs: suma dos numeros
     runs-on: ubuntu-latest
     steps:
       - name: Validar si la suma es mayor a 10

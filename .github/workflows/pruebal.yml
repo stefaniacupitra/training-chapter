@@ -1,0 +1,28 @@
+name: ejericio-capitulo-formacion
+
+on:
+  push:
+    branches:
+      - test/**
+
+jobs:
+  job1:
+    name: suma numeros
+    runs-on: ubuntu-latest
+    steps:
+      - name: imprimir resultado de la Suma
+        run: |
+          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"
+          echo "El resultado de la suma es $SUMA"
+
+  job2:
+    name: ejecucion exitosa
+    runs-on: ubuntu-latest
+    steps:
+      - name: verificar el workflow
+        run: |
+          if [ $SUMA -gt 10 ]; then
+            echo "el resultado de la suma es mayor a 10"
+          else
+            echo "el resultado de la suma es menor o igual a 10"
+          fi
