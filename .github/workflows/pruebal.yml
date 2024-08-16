@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: verificar el workflow
         run: |
-          if [ ${{ needs.resultado.outputs.output1 }} -gt 10 ]; then
+          if [ "${{ needs.resultado.outputs.output1 }}" -gt 10 ]; then
             echo " ${{ needs.resultado.outputs.output1 }} el resultado de la suma es mayor a 10"
           else
             echo "el resultado de la suma es menor o igual a 10"
