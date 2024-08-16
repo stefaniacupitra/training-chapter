@@ -16,7 +16,7 @@ jobs:
         id: resultado
         run: |
           echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"
-          run: echo "test=$SUMA" >> "$GITHUB_OUTPUT"
+          echo "test=$SUMA" >> "$GITHUB_OUTPUT"
           echo "El resultado de la suma es $SUMA"
 
   job2:
