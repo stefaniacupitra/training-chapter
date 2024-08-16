@@ -37,9 +37,6 @@ jobs:
           RESULTADO=$((${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }}))
           echo "resultado=$RESULTADO" >> "$GITHUB_OUTPUT"
           echo "resultado de la suma es: $RESULTADO"
-  
-  
-  
 
   #JOB 2
   validador:
@@ -52,7 +49,7 @@ jobs:
         run: | #SHELL
           echo "${{ needs.suma.outputs.resultado }}"
           if [ ${{ needs.suma.outputs.resultado }} -gt 10 ]; then
-            echo "el resultado de la suma es ${{ needs.suma.outputs.resultado }} por lo tanto es mayor a 10"
+            echo "el resultado de la suma de ${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }} es ${{ needs.suma.outputs.resultado }}, por lo tanto, es mayor que 10."
           else
-            echo "el resultado de la suma es ${{ needs.suma.outputs.resultado }} por lo tanto es menor o igual a 10"
+            echo "el resultado de la suma de ${{ vars.NUMERO_UNO }} + ${{ vars.NUMERO_DOS }} es ${{ needs.suma.outputs.resultado }}, por lo tanto, es menor/igual que 10."
           fi
