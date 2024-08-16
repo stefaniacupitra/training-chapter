@@ -1,0 +1,32 @@
+name: Suma de Numeros y validar el resultado
+
+on:
+  push:
+    branches:
+      - 'test/**'
+
+jobs:
+  job1:
+    name: sumar dos numeros
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configurar variables de entorno
+        run: |
+          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))" >> $GITHUB_ENV
+
+      - name: Mostrar el resultado de la suma
+        run: echo "El resultado de la suma es ${{ env.SUMA }}"
+
+
+
+  job2:
+    name: validar suma
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar si la suma es mayor a 10
+        run: |
+          if [ ${{ env.SUMA }} -gt 10 ]; then
+            echo "La suma es mayor a 10."
+          else
+            echo "La suma es menor o igual a 10."
+          fi
