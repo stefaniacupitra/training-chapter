@@ -3,7 +3,7 @@ name: suma-numeros
 on:
   push:
     branches:
-      - test/pipeline
+      - test/**
 
 jobs:
   job1:
