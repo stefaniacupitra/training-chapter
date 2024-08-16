@@ -54,7 +54,7 @@ jobs:
         run: | #SHELL
           echo "${{ needs.suma.outputs.resultado }}"
           if [ ${{ needs.suma.outputs.resultado }} -gt 10 ]; then
-            echo "el resultado de la suma es $RESULTADO y es mayor a 10"
+            echo "el resultado de la suma es ${{ needs.suma.outputs.resultado }} y es mayor a 10"
           else
-            echo "el resultado de la suma es $RESULTADO y es menor o igual a 10"
+            echo "el resultado de la suma es ${{ needs.suma.outputs.resultado }} y es menor o igual a 10"
           fi
