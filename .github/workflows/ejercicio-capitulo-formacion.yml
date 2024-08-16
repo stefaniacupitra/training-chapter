@@ -21,12 +21,14 @@ on:
 
 #JOBS
 jobs:
+
   #JOB 1
   suma:
     name: sumar numeros
     runs-on: ubuntu-latest #RUNNER
     outputs:
       resultado: ${{ steps.suma.outputs.resultado }} #OUTPUT PARA COMPARTIR EL VALOR
+
     #STEP 1
     steps:
       - name: imprimir resultado de la Suma
@@ -43,6 +45,7 @@ jobs:
     name: validacion resultado suma
     runs-on: ubuntu-latest #RUNNER
     needs: suma #DEPENDENCIA JOB 1
+
     #STEP 1
     steps:
       - name: verificar si es mayor o menor/igual
