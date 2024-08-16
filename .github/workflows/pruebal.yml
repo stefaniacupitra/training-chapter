@@ -10,12 +10,13 @@ jobs:
     name: suma numeros
     runs-on: ubuntu-latest
     outputs:
-      output1: ${{ steps.resultado.outputs.SUMA }}
+      output1: ${{ steps.resultado.outputs.test }}
     steps:
       - name: resultado
+        id: resultado
         run: |
           echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"
-          run: echo "test=SUMA" >> "$GITHUB_OUTPUT"
+          run: echo "test=$SUMA" >> "$GITHUB_OUTPUT"
           echo "El resultado de la suma es $SUMA"
 
   job2:
