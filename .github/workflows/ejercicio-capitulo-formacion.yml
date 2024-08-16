@@ -26,7 +26,7 @@ jobs:
     name: sumar numeros
     runs-on: ubuntu-latest #RUNNER
     outputs:
-      resultado: ${{ steps.suma.outputs.resultado }}
+      resultado: ${{ steps.suma.outputs.resultado }} #OUTPUT PARA COMPARTIR EL VALOR
     #STEP 1
     steps:
       - name: imprimir resultado de la Suma
@@ -34,8 +34,8 @@ jobs:
         run: | #SHELL
           numero1=2
           numero2=9
-          echo "numero 1: $numero1"
-          echo "numero 2: $numero2"
+          echo "numero 1: ${{ vars.NUMERO_UNO }}"
+          echo "numero 2: ${{ vars.NUMERO_DOS }}"
           RESULTADO=$(($numero1 + $numero2))
           echo "resultado=$RESULTADO" >> "$GITHUB_OUTPUT"
           echo "resultado de la suma es: $RESULTADO"
