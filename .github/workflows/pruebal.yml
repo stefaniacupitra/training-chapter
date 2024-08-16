@@ -3,7 +3,7 @@ name: suma-numeros
 on:
   push:
     branches:
-      - test/pipeline
+      - test/**
 
 jobs:
   job1:
@@ -14,7 +14,8 @@ jobs:
     steps:
       - name: resultado
         run: |
-          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"  >> "$GITHUB_OUTPUT"
+          echo "SUMA=$((${{ vars.A }} + ${{ vars.B }}))"
+          run: echo "test=SUMA" >> "$GITHUB_OUTPUT"
           echo "El resultado de la suma es $SUMA"
 
   job2:
