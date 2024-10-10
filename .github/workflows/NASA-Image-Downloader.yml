@@ -16,8 +16,6 @@ jobs:
       # 1. Consultar el repositorio para acceder al archivo dates.json
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          node-version: '20'
       
       # 2. Instalar jq para procesar el archivo JSON
       - name: Instalar jq
@@ -53,15 +51,17 @@ jobs:
       # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          node-version: '20'
 
       # 2. Instalar jq y curl
       - name: Instalar dependencias
         run: |
           sudo apt-get install -y jq curl
+
+      # 3. Verificar versión de Node.js
+      - name: Verificar versión de Node.js
+        run: node -v
       
-      # 3. Obtener la imagen de la NASA
+      # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
         run: |
           DATE=${{ matrix.date }}
@@ -87,7 +87,7 @@ jobs:
           echo "Cargando artefacto para $DATE..."
           echo "image_name=$IMAGE_NAME" >> $GITHUB_ENV
 
-      # 4. Subir la imagen como artefacto
+      # 5. Subir la imagen como artefacto
       - name: Subir imagen como artefacto
         uses: actions/upload-artifact@v3
         with:
