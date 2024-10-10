@@ -89,7 +89,7 @@ jobs:
 
       # 5. Subir la imagen como artefacto
       - name: Subir imagen como artefacto
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Imágenes de la NASA - ${{ matrix.date }}
           path: ${{ env.image_name }}
