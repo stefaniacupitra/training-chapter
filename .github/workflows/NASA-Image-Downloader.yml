@@ -56,10 +56,6 @@ jobs:
       - name: Instalar dependencias
         run: |
           sudo apt-get install -y jq curl
-
-      # 3. Verificar versión de Node.js
-      - name: Verificar versión de Node.js
-        run: node -v
       
       # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
