@@ -7,78 +7,78 @@ on:
   workflow_dispatch:
 
 jobs:
-  download-nasa-images:
+  descargar-imagenes-de-la-NASA:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout the repository to access the dates.json file
-      - name: Checkout repository
+      # 1. Consulte el repositorio para acceder al archivo dates.json
+      - name: Repositorio de pago
         uses: actions/checkout@v3
       
-      # 2. Set up Node.js environment for processing the JSON file
-      - name: Set up Node.js
+      # 2. Configurar el entorno Node.js para procesar el archivo JSON
+      - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
       
-      # 3. Install curl to make the HTTP requests (in case it's not installed)
-      - name: Install curl
+      # 3. Instalar curl para realizar las solicitudes HTTP (en caso de que no esté instalado)
+      - name: Instalar curl
         run: sudo apt-get install -y curl
       
-      # 4. Read dates from the JSON file and fetch the images in parallel
-      - name: Fetch NASA images
+      # 4. Leer fechas del archivo JSON y obtener las imágenes en paralelo
+      - name: Obtener imágenes de la NASA
         id: fetch-images
         run: |
-          # Path to the dates.json file
+          # Ruta al archivo dates.json
           DATES_FILE="dates.json"
           
-          # Check if dates file exists
+          # Comprobar si existe el archivo de fechas
           if [ ! -f "$DATES_FILE" ]; then
-            echo "File not found: $DATES_FILE"
+            echo "Archivo no encontrado: $DATES_FILE"
             exit 1
           fi
           
-          # Read the dates from the JSON file
+          # Leer las fechas del archivo JSON
           DATES=$(cat "$DATES_FILE" | jq -r '.dates[]')
           
-          # Prepare the cache directory
+          # Preparar el directorio de caché
           CACHE_DIR=".cache"
           mkdir -p "$CACHE_DIR"
           
-          # Iterate over each date in the JSON file
+          # Iterar sobre cada fecha en el archivo JSON
           for DATE in $DATES; do
             CACHE_FILE="$CACHE_DIR/$DATE.json"
           
-            # Check cache first
+            # Primero verifique el caché
             if [ -f "$CACHE_FILE" ]; then
-              echo "Cache hit for $DATE. Skipping API call."
+              echo "Se ha encontrado un error en la caché para $DATE. Se omite la llamada a la API."
               RESPONSE=$(cat "$CACHE_FILE")
             else
-              echo "Fetching image for $DATE..."
-              # Perform the GET request to NASA API
+              echo "Obteniendo imagen para $DATE..."
+              # Realizar la solicitud GET a la API de la NASA
               RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
           
-              # Save the response in cache
+              # Guardar la respuesta en caché
               echo "$RESPONSE" > "$CACHE_FILE"
             fi
           
-            # Extract the image URL
+            # Extraer la URL de la imagen
             IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
           
-            # Download the image
+            # Descargar la imagen
             IMAGE_NAME="img-$DATE.jpg"
             curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
           
-            # Export the image as an artifact
-            echo "Uploading artifact for $DATE..."
+            # Exportar la imagen como un artefacto
+            echo "Cargando artefacto para $DATE..."
             echo "::set-output name=image_$DATE::$IMAGE_NAME"
           done
       
-      # 5. Upload the images as artifacts
-      - name: Upload images as artifacts
+      # 5. Subir las imágenes como artefactos
+      - name: Subir imágenes como artefactos
         uses: actions/upload-artifact@v3
         with:
-          name: NASA Images
+          name: Imágenes de la NASA
           path: |
             img-*.jpg
           retention-days: 1
