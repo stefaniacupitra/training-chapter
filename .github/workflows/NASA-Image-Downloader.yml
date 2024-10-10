@@ -3,7 +3,7 @@ name: NASA Images Pipeline
 on:
   push:
     branches:
-      - main
+      - test/**
   workflow_dispatch:
 
 jobs:
