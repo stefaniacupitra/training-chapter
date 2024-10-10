@@ -52,9 +52,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      #cache
+      - name: cache
+        id: cache-img
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-img
+        with:
+          path: img-${{ matrix.dates }}.jpg
+          key: cache-img-${{ matrix.dates }}
+          restore-keys: |
+            cache-img-
+      
 
       # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
+        id: fetch_image
+        if: ${{ steps.cache.-img.outputs.cache-hit != 'true' }}
         run: |
           DATE=${{ matrix.date }}
           echo "Obteniendo imagen para $DATE..."
@@ -81,6 +95,7 @@ jobs:
 
       # 5. Subir la imagen como artefacto
       - name: Subir imagen como artefacto
+        if: ${{ steps.cache.-img.outputs.cache-hit != 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: Imágenes de la NASA - ${{ matrix.date }}
