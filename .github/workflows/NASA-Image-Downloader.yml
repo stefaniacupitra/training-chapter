@@ -34,8 +34,8 @@ jobs:
             exit 1
           fi
           
-          # Leer las fechas y convertirlas en una lista de strings válidas para GitHub Actions
-          DATES=$(jq -r '[.dates[] | tostring] | join(",")' "$DATES_FILE")
+          # Exportar las fechas como una salida
+          DATES=$(jq -r '.dates[]' "$DATES_FILE")
           echo "::set-output name=dates::$DATES"
   
   # Job dinámico para cada fecha
