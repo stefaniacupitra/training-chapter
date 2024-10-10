@@ -1,0 +1,85 @@
+#Descripción
+#Crear un pipeline que exporte como artefacto las imagenes mas populares de la NASA en las fechas definidas en un archivo JSON dentro del repositorio.
+
+#El pipeline deberá leer el archivo JSON y crear un paralelo por cada fecha dentro del mismo, luego en cada paralelo deberá tomar la fecha y realizar
+#un petición HTTP de tipo GET al API https://api.nasa.gov/planetary/apod?api_key=API_KEY&date=FECHA cambiando el API_KEY y la FECHA (Para obtener el
+#API_KEY debe registrarse en el siguiente link NASA Open APIs) la respuesta del API debe ser almacenada en cache y saltarse el paso de llamar al API
+#en caso de encontrar un registro ya guardado en cache.
+
+#Luego, tome la propiedad url de la respuesta del API (la cual contiene la url de la imagen mas popular de la NASA en esa fecha) y use un action para
+#descargar la imagen, una vez tenga el archivo de la imagen, exporte un artefacto por cada imagen con el nombre img-{fecha} donde debera reemplazar
+#{fecha} por la fecha consultada en el API.
+
+#Al final se debe obtener un artefacto por cada fecha dentro del archivo JSON, y dentro del artefacto debe estar la imagen mas popular de la NASA en esa fecha.
+
+#A evaluar
+
+#En caso de que falle un paralelo, los demás deben seguir ejecutandose
+#El cache debe almacenar la respuesta del API  según la fecha consultada y saltar la consulta al API en caso de encontrar la llave
+#Los paralelos deben ser dinámicos, es decir que si hay mas fechas, debe haber mas paralelos
+#Debe buscar y usar un action para la descarga de las imágenes
+#Debe almacenar y leer el API key desde un secreto del repositorio
+#Usar únicamente el archivo JSON del repositorio
+#Debe haber un artefacto por imagen y cada uno debe tener como nombre ?img-{fecha}?
+#Los artefactos deben tener un tiempo de duración de 1 día
+
+name: NASA Image Downloader
+
+on:
+  workflow_dispatch: # Para disparar manualmente el pipeline
+
+jobs:
+  download-images:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Consultar el repositorio
+        uses: actions/checkout@v2
+
+      - name: Leer archivo JSON
+        id: leer_json
+        run: |
+          dates=$(jq -r '.dates[]' dates.json)
+          echo "::set-output name=dates::$dates"
+        shell: bash
+
+      - name: Crear directorio de caché de imágenes
+        run: mkdir -p cache
+
+      - name: Procesar cada fecha en paralelo
+        run: |
+          for date in ${{ steps.read_json.outputs.dates }}
+          do
+            echo "Fecha de procesamiento: $date"
+          
+            if [[ -f "cache/$date.json" ]]; then
+              echo "Caché encontrada para $ date, salteando llamada API."
+            else
+              echo "No se encontró caché, se llama a la API de la NASA para $date."
+              response=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$date")
+              echo "$response" > "cache/$date.json"
+            fi
+          done
+
+      - name: Descargar imágenes
+        run: |
+          for date in ${{ steps.read_json.outputs.dates }}
+          do
+            cached_file="cache/$date.json"
+            image_url=$(jq -r '.url' "$cached_file")
+            curl -s -O "$image_url" --output "img-$date.jpg"
+          done
+
+      - name: Subir artefactos
+        run: |
+          for date in ${{ steps.read_json.outputs.dates }}
+          do
+            tar -czf "img-$date.tar.gz" "img-$date.jpg"
+          done
+
+      - name: Subir artefactos a GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: img-${{ steps.read_json.outputs.dates }}
+          path: img-*.tar.gz
+          retention-days: 1
