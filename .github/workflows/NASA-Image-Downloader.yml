@@ -68,7 +68,7 @@ jobs:
       # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
         id: fetch_image
-        if: ${{ steps.cache.-img.outputs.cache-hit != 'true' }}
+        if: ${{ steps.cache-img.outputs.cache-hit != 'true' }}
         run: |
           DATE=${{ matrix.date }}
           echo "Obteniendo imagen para $DATE..."
