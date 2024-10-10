@@ -34,8 +34,8 @@ jobs:
             exit 1
           fi
           
-          # Exportar las fechas como una salida
-          DATES=$(jq -r '.dates[]' "$DATES_FILE")
+          # Leer las fechas y convertirlas en una lista de strings válidas para GitHub Actions
+          DATES=$(jq -r '[.dates[] | tostring] | join(",")' "$DATES_FILE")
           echo "::set-output name=dates::$DATES"
   
   # Job dinámico para cada fecha
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        date: ${{ fromJson(needs.preparar.outputs.dates) }}
+        date: [${{ needs.preparar.outputs.dates }}]  # Pasamos las fechas como una lista de strings
     continue-on-error: true  # Si un job falla, los otros continúan
 
     steps:
