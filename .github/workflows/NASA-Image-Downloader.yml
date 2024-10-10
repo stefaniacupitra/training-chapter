@@ -16,6 +16,8 @@ jobs:
       # 1. Consultar el repositorio para acceder al archivo dates.json
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          node-version: '20'
       
       # 2. Instalar jq para procesar el archivo JSON
       - name: Instalar jq
@@ -51,6 +53,8 @@ jobs:
       # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          node-version: '20'
 
       # 2. Instalar jq y curl
       - name: Instalar dependencias
