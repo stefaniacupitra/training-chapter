@@ -57,43 +57,31 @@ jobs:
         run: |
           sudo apt-get install -y jq curl
 
-      # 3. Crear directorio de caché
-      - name: Crear directorio de caché
-        run: mkdir -p .cache
+      # 3. Verificar versión de Node.js
+      - name: Verificar versión de Node.js
+        run: node -v
 
       # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
         run: |
           DATE=${{ matrix.date }}
-          CACHE_FILE=".cache/img-$DATE.json"
+          echo "Obteniendo imagen para $DATE..."
 
-          # Comprobar si la respuesta ya está en caché
-          if [ -f "$CACHE_FILE" ]; then
-            echo "Cargando imagen desde caché para $DATE..."
-            IMAGE_NAME=$(jq -r '.image_name' "$CACHE_FILE")
-          else
-            echo "Obteniendo imagen para $DATE..."
+          # Realizar la solicitud GET a la API de la NASA
+          RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
 
-            # Realizar la solicitud GET a la API de la NASA
-            RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
-
-            # Verificar si la respuesta tiene un error
-            if echo "$RESPONSE" | jq -e '.error' > /dev/null; then
-              echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r '.error.message')"
-              exit 0  # No interrumpir el pipeline en caso de error
-            fi
-
-            # Extraer la URL de la imagen
-            IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
-
-            # Descargar la imagen
-            IMAGE_NAME="img-$DATE.jpg"
-            curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
-
-            # Guardar la respuesta en caché
-            echo "{\"image_name\":\"$IMAGE_NAME\"}" > "$CACHE_FILE"
-            echo "Caché guardado para $DATE."
+          # Verificar si la respuesta tiene un error
+          if echo "$RESPONSE" | jq -e '.error' > /dev/null; then
+            echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r '.error.message')"
+            exit 0  # No interrumpir el pipeline en caso de error
           fi
+
+          # Extraer la URL de la imagen
+          IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
+
+          # Descargar la imagen
+          IMAGE_NAME="img-$DATE.jpg"
+          curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
 
           # Exportar el nombre de la imagen como un artefacto
           echo "Cargando artefacto para $DATE..."
