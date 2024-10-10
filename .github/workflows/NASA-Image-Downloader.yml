@@ -52,10 +52,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Instalar jq y curl
-      - name: Instalar dependencias
-        run: |
-          sudo apt-get install -y jq curl
 
       # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
