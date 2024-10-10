@@ -11,16 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dates: ${{ steps.fetch-dates.outputs.dates }}
-    
+
     steps:
       # 1. Consultar el repositorio para acceder al archivo dates.json
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       # 2. Instalar jq para procesar el archivo JSON
       - name: Instalar jq
         run: sudo apt-get install -y jq
-      
+
       # 3. Leer fechas del archivo JSON
       - name: Leer fechas del archivo dates.json
         id: fetch-dates
@@ -37,7 +37,7 @@ jobs:
           # Leer las fechas y convertirlas en una lista JSON
           DATES=$(jq -c '.dates' "$DATES_FILE")
           echo "dates=$DATES" >> $GITHUB_OUTPUT
-  
+
   # Job dinámico para descargar imágenes basado en la lista de fechas
   descargar-imagen:
     needs: preparar
@@ -57,50 +57,28 @@ jobs:
         run: |
           sudo apt-get install -y jq curl
 
-      # 3. Cache responses
-      - name: Cache API Responses
-        id: cache-nasa
-        uses: actions/cache@v4
-        with:
-          path: cache/${{ matrix.date }}.json
-          key: nasa-images-${{ matrix.date }}
-          restore-keys: |
-            nasa-images-
-
       # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
         run: |
           DATE=${{ matrix.date }}
-          CACHE_FILE="cache/$DATE.json"
+          echo "Obteniendo imagen para $DATE..."
 
-          # Comprobar si la respuesta ya está en caché
-          if [ -f "$CACHE_FILE" ]; then
-            echo "Cargando imagen desde caché para $DATE..."
-            IMAGE_NAME=$(jq -r '.image_name' "$CACHE_FILE")
-          else
-            echo "Obteniendo imagen para $DATE..."
+          # Realizar la solicitud GET a la API de la NASA
+          RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
 
-            # Realizar la solicitud GET a la API de la NASA
-            RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
-
-            # Verificar si la respuesta tiene un error
-            if echo "$RESPONSE" | jq -e '.error' > /dev/null; then
-              echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r '.error.message')"
-              exit 0  # No interrumpir el pipeline en caso de error
-            fi
-
-            # Extraer la URL de la imagen
-            IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
-
-            # Descargar la imagen
-            IMAGE_NAME="img-$DATE.jpg"
-            curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
-
-            # Guardar la respuesta en caché
-            echo "{\"image_name\":\"$IMAGE_NAME\"}" > "$CACHE_FILE"
-            echo "Caché guardado para $DATE."
+          # Verificar si la respuesta tiene un error
+          if echo "$RESPONSE" | jq -e '.error' > /dev/null; then
+            echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r '.error.message')"
+            exit 0  # No interrumpir el pipeline en caso de error
           fi
-          
+
+          # Extraer la URL de la imagen
+          IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
+
+          # Descargar la imagen
+          IMAGE_NAME="img-$DATE.jpg"
+          curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
+
           # Exportar el nombre de la imagen como un artefacto
           echo "Cargando artefacto para $DATE..."
           echo "image_name=$IMAGE_NAME" >> $GITHUB_ENV
