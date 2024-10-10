@@ -30,7 +30,7 @@ jobs:
         id: fetch-images
         run: |
           # Path to the dates.json file
-          DATES_FILE=".github/workflows/dates.json"
+          DATES_FILE="dates.json"
           
           # Check if dates file exists
           if [ ! -f "$DATES_FILE" ]; then
