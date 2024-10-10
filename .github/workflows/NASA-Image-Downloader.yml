@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        date: [${{ needs.preparar.outputs.dates }}]  # Pasamos las fechas como una lista de strings
+        date: ${{ fromJson(needs.preparar.outputs.dates) }}
     continue-on-error: true  # Si un job falla, los otros continúan
 
     steps:
