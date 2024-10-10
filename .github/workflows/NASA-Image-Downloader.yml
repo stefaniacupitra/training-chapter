@@ -13,7 +13,7 @@ jobs:
       dates: ${{ steps.fetch-dates.outputs.dates }}
     
     steps:
-      # 1. Consulte el repositorio para acceder al archivo dates.json
+      # 1. Consultar el repositorio para acceder al archivo dates.json
       - name: Checkout repository
         uses: actions/checkout@v3
       
@@ -34,17 +34,17 @@ jobs:
             exit 1
           fi
           
-          # Exportar las fechas como una salida
-          DATES=$(jq -r '.dates[]' "$DATES_FILE")
+          # Leer las fechas y convertirlas en una lista JSON
+          DATES=$(jq -c '.dates' "$DATES_FILE")
           echo "::set-output name=dates::$DATES"
   
-  # Job dinámico para cada fecha
+  # Job dinámico para descargar imágenes basado en la lista de fechas
   descargar-imagen:
     needs: preparar
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        date: ${{ fromJson(needs.preparar.outputs.dates) }}
+        date: ${{ fromJSON(needs.preparar.outputs.dates) }}  # Convertimos la lista de fechas en una matriz JSON
     continue-on-error: true  # Si un job falla, los otros continúan
 
     steps:
