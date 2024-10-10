@@ -43,9 +43,9 @@ jobs:
     needs: preparar
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         date: ${{ fromJSON(needs.preparar.outputs.dates) }}  # Convertimos la lista de fechas en una matriz JSON
+    continue-on-error: true  # Si un job falla, los otros continúan
 
     steps:
       # 1. Checkout repository
@@ -57,27 +57,48 @@ jobs:
         run: |
           sudo apt-get install -y jq curl
 
+      # 3. Restaurar caché
+      - name: Restaurar caché
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: ${{ runner.os }}-nasa-images-${{ matrix.date }}  # Generar clave basada en la fecha
+          restore-keys: |
+            ${{ runner.os }}-nasa-images-
+
       # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
         run: |
           DATE=${{ matrix.date }}
-          echo "Obteniendo imagen para $DATE..."
+          CACHE_FILE=".cache/img-$DATE.json"
 
-          # Realizar la solicitud GET a la API de la NASA
-          RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
+          # Comprobar si la respuesta ya está en caché
+          if [ -f "$CACHE_FILE" ]; then
+            echo "Cargando imagen desde caché para $DATE..."
+            IMAGE_NAME=$(jq -r '.image_name' "$CACHE_FILE")
+          else
+            echo "Obteniendo imagen para $DATE..."
 
-          # Verificar si la respuesta tiene un error
-          if echo "$RESPONSE" | jq -e '.error' > /dev/null; then
-            echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r '.error.message')"
-            exit 0  # No interrumpir el pipeline en caso de error
+            # Realizar la solicitud GET a la API de la NASA
+            RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
+
+            # Verificar si la respuesta tiene un error
+            if echo "$RESPONSE" | jq -e '.error' > /dev/null; then
+              echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r '.error.message')"
+              exit 0  # No interrumpir el pipeline en caso de error
+            fi
+
+            # Extraer la URL de la imagen
+            IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
+
+            # Descargar la imagen
+            IMAGE_NAME="img-$DATE.jpg"
+            curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
+
+            # Guardar la respuesta en caché
+            echo "{\"image_name\":\"$IMAGE_NAME\"}" > "$CACHE_FILE"
+            echo "Caché guardado para $DATE."
           fi
-
-          # Extraer la URL de la imagen
-          IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
-
-          # Descargar la imagen
-          IMAGE_NAME="img-$DATE.jpg"
-          curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
 
           # Exportar el nombre de la imagen como un artefacto
           echo "Cargando artefacto para $DATE..."
