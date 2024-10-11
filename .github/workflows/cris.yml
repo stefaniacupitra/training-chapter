@@ -85,10 +85,11 @@ jobs:
         with:
           url: ${{ env.image_url }}
           imagePath: 'img-${{ matrix.dates }}.${{ env.ext }}'
-          continue-on-error: true
+        continue-on-error: true
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
           name: img-${{ matrix.dates }}
           path: img-${{ matrix.dates }}.${{ env.ext }}
+          retention-days: 1
