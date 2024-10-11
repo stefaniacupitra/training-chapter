@@ -18,7 +18,7 @@ jobs:
       #STEP 1 - Consultar el repositorio para acceder al archivo dates.json
       - name: Consultar repositorio
         uses: actions/checkout@v4 #ACTIONS
-      #STEP 2 - Leer fechas del archivo JSON
+      #STEP 2 - Leer fechas del archivo dates.json
       - name: Leer fechas del archivo dates.json
         id: obtener-fechas
         run: | #SHELL
@@ -33,14 +33,14 @@ jobs:
           DATES=$(jq -c '.dates' "$ARCHIVO_DE_FECHAS")
           echo "dates=$DATES" >> $GITHUB_OUTPUT
 
-  # Job dinámico para descargar imágenes basado en la lista de fechas
-  descargar-imagen:
+  #JOB 2
+  descargar-imagenes:
     needs: preparacion-para-descarga
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        date: ${{ fromJSON(needs.preparacion-para-descarga.outputs.fechas) }}  # Cambiado para usar el nuevo output 'fechas'
+        fecha: ${{ fromJSON(needs.preparacion-para-descarga.outputs.fechas) }}
 
     steps:
       # 1. Checkout repository
@@ -54,8 +54,8 @@ jobs:
         env:
           cache-name: cache_img
         with:
-          path: img-${{ matrix.date }}.jpg  # matrix.date, no matrix.dates
-          key: cache-img-${{ matrix.date }}
+          path: img-${{ matrix.fecha }}.jpg  # matrix.date, no matrix.dates
+          key: cache-img-${{ matrix.fecha }}
           restore-keys: |
             cache-img-
       
@@ -64,7 +64,7 @@ jobs:
         id: fetch_image
         if: ${{ steps.cache_img.outputs.cache-hit != 'true' }}  # Correcta referencia sin guion
         run: |
-          DATE=${{ matrix.date }}
+          DATE=${{ matrix.fecha }}
           echo "Obteniendo imagen para $DATE..."
 
           # Realizar la solicitud GET a la API de la NASA
@@ -89,6 +89,6 @@ jobs:
         if: ${{ steps.cache_img.outputs.cache-hit != 'true' }}  # Referencia corregida sin guion
         uses: actions/upload-artifact@v4
         with:
-          name: Imágenes de la NASA - ${{ matrix.date }}
+          name: Imágenes de la NASA - ${{ matrix.fecha }}
           path: ${{ env.image_name }}
           retention-days: 1
