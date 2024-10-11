@@ -1,30 +1,3 @@
-# Segundo taller practico
- 
-#Descripción
-#Crear un pipeline que exporte como artefacto las imagenes mas populares de la NASA en las fechas definidas en un archivo JSON dentro del repositorio.
-#El pipeline deberá leer el archivo JSON y crear un paralelo por cada fecha dentro del mismo, luego en cada paralelo deberá tomar la fecha y realizar un petición HTTP de tipo GET al API https://api.nasa.gov/planetary/apod?api_key=API_KEY&date=FECHA cambiando el API_KEY y la FECHA (Para obtener el API_KEY debe registrarse en el siguiente link NASA Open APIs) la respuesta del API debe ser almacenada en cache y saltarse el paso de llamar al API en caso de encontrar un registro ya guardado en cache
-#Luego, tome la propiedad url de la respuesta del API (la cual contiene la url de la imagen mas popular de la NASA en esa fecha) y use un action para descargar la imagen, una vez tenga el archivo de la imagen, exporte un artefacto por cada imagen con el nombre img-{fecha} donde debera reemplazar {fecha} por la fecha consultada en el API.
-#Al final se debe obtener un artefacto por cada fecha dentro del archivo JSON, y dentro del artefacto debe estar la imagen mas popular de la NASA en esa fecha
- 
-#A evaluar
- 
-#En caso de que falle un paralelo, los demás deben seguir ejecutandose
-#El cache debe almacenar la respuesta del API  según la fecha consultada y saltar la consulta al API en caso de encontrar la llave
-#Los paralelos deben ser dinámicos, es decir que si hay mas fechas, debe haber mas paralelos
-#Debe buscar y usar un action para la descarga de las imágenes
-#Debe almacenar y leer el API key desde un secreto del repositorio
-#Usar únicamente el archivo JSON del repositorio
-#Debe haber un artefacto por imagen y cada uno debe tener como nombre ?img-{fecha}?
-#Los artefactos deben tener un tiempo de duración de 1 día
-
-name: Imágenes de la NASA
-
-#EVENTO
-on:
-  push:
-    branches:
-      - main
-
 #JOBS
 jobs:
 
@@ -41,15 +14,12 @@ jobs:
       #STEP 2 - Leer fechas del archivo dates.json
       - name: Leer fechas del archivo dates.json
         id: obtener-fechas
-        run: | #SHELL
-          # Ruta al archivo dates.json
+        run: |
           ARCHIVO_DE_FECHAS="dates.json"
-          # Comprobar si existe el archivo de fechas
           if [ ! -f "$ARCHIVO_DE_FECHAS" ]; then
             echo "Archivo no encontrado: $ARCHIVO_DE_FECHAS"
             exit 1
           fi
-          # Leer las fechas y convertirlas en una lista JSON
           DATES=$(jq -c '.dates' "$ARCHIVO_DE_FECHAS")
           echo "dates=$DATES" >> $GITHUB_OUTPUT
 
@@ -62,45 +32,65 @@ jobs:
       matrix:
         fecha: ${{ fromJSON(needs.preparacion-para-descarga.outputs.fechas) }}
     outputs:
-      response: ${{ steps.descarga-imagen.outputs.response }} #OUTPUT PARA COMPARTIR EL VALOR
-        
+      response: ${{ steps.descarga-imagen.outputs.response }}
+
     steps:
       #STEP 1 - Consultar el repositorio
       - name: Consultar repositorio
-        uses: actions/checkout@v4 #ACTIONS
+        uses: actions/checkout@v4
+
       #STEP 2 - Logica para usar cache
-      - name: Cache
-        id: imagen_cache
-        uses: actions/cache@v4 #ACTIONS
+      - name: Cache de respuesta API
+        id: cache_api
+        uses: actions/cache@v4
         env:
-          cache-name: imagen_cache
+          cache-name: respuesta_cache
         with:
-          path: img-${{ matrix.fecha }}.jpg
-          key: cache-img-${{ matrix.fecha }}
+          path: respuesta-${{ matrix.fecha }}.json
+          key: cache-respuesta-${{ matrix.fecha }}
           restore-keys: |
-            cache-img-
-      #STEP 3 - Obtener la imagen de la NASA
-      - name: Obtener imagen de la NASA
-        if: ${{ steps.imagen_cache.outputs.cache-hit != 'true' }}
-        run: | #SHELL
+            cache-respuesta-
+
+      #STEP 3 - Obtener la respuesta de la API y guardar en cache
+      - name: Obtener respuesta de la NASA
+        if: ${{ steps.cache_api.outputs.cache-hit != 'true' }}
+        run: |
           DATE=${{ matrix.fecha }}
-          echo "Obteniendo imagen para $DATE..."
+          echo "Obteniendo respuesta para $DATE..."
           # Realizar la solicitud GET a la API de la NASA
           RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.API_KEY }}&date=$DATE")
-          # Verificar si la respuesta tiene un error
-          echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r)"
-          # Extraer la URL de la imagen
-          IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
+          # Guardar la respuesta en un archivo JSON
+          echo "$RESPONSE" > respuesta-${DATE}.json
+          echo "respuesta_guardada=respuesta-${DATE}.json" >> $GITHUB_ENV
+
+      #STEP 4 - Subir la respuesta como artefacto
+      - name: Subir respuesta como artefacto
+        if: ${{ steps.cache_api.outputs.cache-hit != 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: respuesta-${{ matrix.fecha }}
+          path: respuesta-${{ matrix.fecha }}.json
+          retention-days: 1
+
+      #STEP 5 - Extraer la URL de la imagen y descargarla
+      - name: Extraer URL de imagen y descargar
+        run: |
+          DATE=${{ matrix.fecha }}
+          # Si está en cache, cargar el archivo JSON desde cache
+          if [ -f "respuesta-${DATE}.json" ]; then
+            echo "Leyendo respuesta desde cache..."
+            IMAGE_URL=$(jq -r '.url' respuesta-${DATE}.json)
+          else
+            IMAGE_URL=$(jq -r '.url' ${{ env.respuesta_guardada }})
+          fi
           # Descargar la imagen
           IMAGE_NAME="img-$DATE.jpg"
           curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
-          # Exportar el nombre de la imagen como un artefacto
-          echo "Cargando artefacto para $DATE..."
           echo "image_name=$IMAGE_NAME" >> $GITHUB_ENV
-      #STEP 4 - Subir la imagen como artefacto
+
+      #STEP 6 - Subir la imagen como artefacto
       - name: Subir imagen como artefacto
-        if: ${{ steps.imagen_cache.outputs.cache-hit != 'true' }}
-        uses: actions/upload-artifact@v4 #ACTIONS
+        uses: actions/upload-artifact@v4
         with:
           name: img-${{ matrix.fecha }}
           path: ${{ env.image_name }}
