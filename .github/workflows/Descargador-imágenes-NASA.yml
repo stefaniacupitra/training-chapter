@@ -87,7 +87,7 @@ jobs:
           echo "Obteniendo imagen para $DATE..."
           # Realizar la solicitud GET a la API de la NASA
           RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.API_KEY }}&date=$DATE")
-          echo "response=RESPONSE" >> $GITHUB_ENV
+          echo "response=$RESPONSE" >> $GITHUB_ENV
           echo "el response es: $RESPONSE"
           # Verificar si la respuesta tiene un error
           echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r)"
