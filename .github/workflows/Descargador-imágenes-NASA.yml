@@ -101,7 +101,7 @@ jobs:
           path: respuesta-${{ matrix.fecha }}.json
           retention-days: 1
 
-      #STEP 5 - Extraer la URL de la imagen y descargarla
+      #STEP 5 - Extraer URL de imagen y descargar usando minituff/save-image@v1.4
       - name: Extraer URL de imagen y descargar
         run: |
           DATE=${{ matrix.fecha }}
@@ -112,15 +112,18 @@ jobs:
           else
             IMAGE_URL=$(jq -r '.url' ${{ env.respuesta_guardada }})
           fi
-          # Descargar la imagen
-          IMAGE_NAME="img-$DATE.jpg"
-          curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
-          echo "image_name=$IMAGE_NAME" >> $GITHUB_ENV
+          echo "image_url=$IMAGE_URL" >> $GITHUB_ENV
+
+      - name: Descargar imagen usando minituff/save-image@v1.4
+        uses: minituff/save-image@v1.4
+        with:
+          image-url: ${{ env.image_url }}
+          image-name: img-${{ matrix.fecha }}.jpg
 
       #STEP 6 - Subir la imagen como artefacto
       - name: Subir imagen como artefacto
         uses: actions/upload-artifact@v4
         with:
           name: img-${{ matrix.fecha }}
-          path: ${{ env.image_name }}
+          path: img-${{ matrix.fecha }}.jpg
           retention-days: 1
