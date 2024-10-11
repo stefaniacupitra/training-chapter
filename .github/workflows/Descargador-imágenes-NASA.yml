@@ -94,13 +94,13 @@ jobs:
           
           echo "response=$RESPONSE_ARCH" >> $GITHUB_ENV
           echo "el response es: $RESPONSE"
+          
           # Verificar si la respuesta tiene un error
           echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r)"
-          
-          
           # Extraer la URL de la imagen
           IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
           # Descargar la imagen
+          
           IMAGE_NAME="img-$DATE.jpg"
           curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
           # Exportar el nombre de la imagen como un artefacto
