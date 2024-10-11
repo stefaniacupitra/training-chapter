@@ -1,0 +1,88 @@
+name: Get images from NASA
+
+on:
+  push:
+    branches:
+      - test/**
+
+jobs:
+  read-json:
+    name: Reading json file and building parallels
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read json file
+        id: readjson
+        uses: antifree/json-to-variables@v1.2.0
+        with:
+          filename: 'dates.json'
+          prefix: 'dates'
+
+      - name: Set matrix for jobs
+        id: set_matrix
+        run: |
+          vars=($(env | grep '^dates_dates_' | awk -F'=' '{print $2}'))
+          matrix_json=$(echo "[\"$(echo ${vars[*]} | sed 's/ /\", \"/g')\"]")
+          echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
+
+  process-images:
+    name: Image processing
+    runs-on: ubuntu-latest
+    needs: read-json
+    strategy:
+      matrix:
+        dates: ${{ fromJson(needs.read-json.outputs.matrix) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Evaluate image cache
+        id: cache-api-response
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-api-response
+        with:
+          path: responses/apod-${{ matrix.dates }}.json
+          key: cache-api-response-${{ matrix.dates }}
+          restore-keys: |
+            cache-api-response-
+
+      - name: Execute GET request if cache does not exist
+        id: fetch_image
+        if: ${{ steps.cache-img.outputs.cache-hit != 'true' }}
+        run: |
+          echo "Consultando la fecha: ${{ matrix.dates }}"
+          response=$(curl -s -X GET "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.API_KEY }}&date=${{ matrix.dates }}")
+          image_url=$(echo "$response" | jq -r '.url')
+          echo "image_url=$image_url" >> $GITHUB_ENV
+
+      - name: Determine image extension
+        id: determine-ext
+        run: |
+          if [[ "${{ env.image_url }}" == *.jpg ]]; then
+           echo "ext=jpg" >> $GITHUB_ENV
+          elif [[ "${{ env.image_url }}" == *.png ]]; then
+           echo "ext=png" >> $GITHUB_ENV
+          else
+           echo "No valid image extension found. Skipping."
+           exit 1
+          fi
+
+      - name: Download image from URL
+        if: ${{ steps.cache-img.outputs.cache-hit != 'true' }}
+        uses: minituff/save-image@v1.4
+        with:
+        url: ${{ env.image_url }}
+        imagePath: 'img-${{ matrix.dates }}.${{ env.ext }}'
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: img-${{ matrix.dates }}
+          path: img-${{ matrix.dates }}.${{ env.ext }}
