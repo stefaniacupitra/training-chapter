@@ -19,6 +19,9 @@ jobs:
       #STEP 1 - consulta el repositorio para acceder al archivo dates.json
       - name: Checkout repository
         uses: actions/checkout@v4
+      #STEP 1 - instalar jq para procesar el archivo JSON
+      - name: Instalar jq
+        run: sudo apt-get install -y jq
 
       # 3. Leer fechas del archivo JSON
       - name: Leer fechas del archivo dates.json
