@@ -1,25 +1,24 @@
-name: NASA Images Pipeline
+name: Imágenes de la NASA
 
+#EVENTO
 on:
   push:
     branches:
-      - test/**
-  workflow_dispatch:
+      - main
 
+#JOBS
 jobs:
-  preparar:
-    runs-on: ubuntu-latest
+
+  #JOB 1
+  preparacion-para-descarga:
+    runs-on: ubuntu-latest #RUNNER
     outputs:
-      dates: ${{ steps.fetch-dates.outputs.dates }}
+      fechas: ${{ steps.fetch-dates.outputs.dates }}
 
     steps:
-      # 1. Consultar el repositorio para acceder al archivo dates.json
+      #STEP 1 - consulta el repositorio para acceder al archivo dates.json
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # 2. Instalar jq para procesar el archivo JSON
-      - name: Instalar jq
-        run: sudo apt-get install -y jq
 
       # 3. Leer fechas del archivo JSON
       - name: Leer fechas del archivo dates.json
