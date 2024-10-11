@@ -87,20 +87,11 @@ jobs:
           echo "Obteniendo imagen para $DATE..."
           # Realizar la solicitud GET a la API de la NASA
           RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.API_KEY }}&date=$DATE")
-          
-          
-          RESPONSE_ARCH="response-$DATE.json"
-          curl -s -o "$RESPONSE_ARCH" "$RESPONSE"
-          
-          echo "response=$RESPONSE_ARCH" >> $GITHUB_ENV
-          echo "el response es: $RESPONSE"
-          
           # Verificar si la respuesta tiene un error
           echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r)"
           # Extraer la URL de la imagen
           IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
           # Descargar la imagen
-          
           IMAGE_NAME="img-$DATE.jpg"
           curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
           # Exportar el nombre de la imagen como un artefacto
@@ -114,9 +105,3 @@ jobs:
           name: img-${{ matrix.fecha }}
           path: ${{ env.image_name }}
           retention-days: 1
-      #STEP 4 - Subir la imagen como artefacto
-      - name: Subir imagen como artefacto2
-        uses: actions/upload-artifact@v4 #ACTIONS
-        with:
-          name: response-${{ matrix.fecha }}
-          path: ${{ env.response }}
