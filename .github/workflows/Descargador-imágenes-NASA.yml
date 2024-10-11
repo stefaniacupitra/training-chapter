@@ -3,7 +3,7 @@ name: Imágenes de la NASA
 on:
   push:
     branches:
-      - main
+      - test/**
 
 #JOBS
 jobs:
