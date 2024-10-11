@@ -12,17 +12,16 @@ jobs:
   preparacion-para-descarga:
     runs-on: ubuntu-latest
     outputs:
-      fechas: ${{ steps.obtener-fechas.outputs.dates }}  # Cambiado de dates a fechas
+      fechas: ${{ steps.obtener-fechas.outputs.dates }}
 
     steps:
-      # 1. Consultar el repositorio para acceder al archivo dates.json
+      #STEP 1 - Consultar el repositorio para acceder al archivo dates.json
       - name: Consultar repositorio
-        uses: actions/checkout@v4
-
-      # 3. Leer fechas del archivo JSON
+        uses: actions/checkout@v4 #ACTIONS
+      #STEP 2 - Leer fechas del archivo JSON
       - name: Leer fechas del archivo dates.json
         id: obtener-fechas
-        run: |
+        run: | #SHELL
           # Ruta al archivo dates.json
           ARCHIVO_DE_FECHAS="dates.json"
           # Comprobar si existe el archivo de fechas
@@ -32,7 +31,7 @@ jobs:
           fi
           # Leer las fechas y convertirlas en una lista JSON
           DATES=$(jq -c '.dates' "$ARCHIVO_DE_FECHAS")
-          echo "dates=$DATES" >> $GITHUB_OUTPUT  # Este valor sigue siendo dates porque corresponde a lo que devuelve jq
+          echo "dates=$DATES" >> $GITHUB_OUTPUT
 
   # Job dinámico para descargar imágenes basado en la lista de fechas
   descargar-imagen:
