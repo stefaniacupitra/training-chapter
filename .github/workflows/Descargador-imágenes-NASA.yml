@@ -23,7 +23,7 @@ name: Imágenes de la NASA
 on:
   push:
     branches:
-      - cambiar
+      - main
 
 #JOBS
 jobs:
@@ -84,7 +84,7 @@ jobs:
           DATE=${{ matrix.fecha }}
           echo "Obteniendo imagen para $DATE..."
           # Realizar la solicitud GET a la API de la NASA
-          RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
+          RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.API_KEY }}&date=$DATE")
           # Verificar si la respuesta tiene un error
           echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r)"
           # Extraer la URL de la imagen
