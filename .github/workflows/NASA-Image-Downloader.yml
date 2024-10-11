@@ -43,7 +43,7 @@ jobs:
     needs: preparar
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      #fail-fast: false
       matrix:
         date: ${{ fromJSON(needs.preparar.outputs.dates) }}  # Convertimos la lista de fechas en una matriz JSON
 
