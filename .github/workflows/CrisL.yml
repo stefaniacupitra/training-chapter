@@ -3,7 +3,7 @@ name: Get images from NASA
 on:
   push:
     branches:
-      - test/**
+      - main
 
 jobs:
   read-json:
@@ -55,7 +55,7 @@ jobs:
 
       - name: Execute GET request if cache does not exist
         id: fetch_image
-        if: ${{ steps.cache-img.outputs.cache-hit != 'true' }}
+        if: ${{ steps.cache-api-response.outputs.cache-hit != 'true' }}
         run: |
           echo "Consultando la fecha: ${{ matrix.dates }}"
           response=$(curl -s -X GET "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.API_KEY }}&date=${{ matrix.dates }}")
@@ -75,11 +75,12 @@ jobs:
           fi
 
       - name: Download image from URL
-        if: ${{ steps.cache-img.outputs.cache-hit != 'true' }}
+        if: ${{ steps.cache-api-response.outputs.cache-hit != 'true' }}
         uses: minituff/save-image@v1.4
         with:
           url: ${{ env.image_url }}
           imagePath: 'img-${{ matrix.dates }}.${{ env.ext }}'
+        continue-on-error: true
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
