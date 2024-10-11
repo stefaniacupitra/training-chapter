@@ -34,7 +34,7 @@ jobs:
           echo "dates=$DATES" >> $GITHUB_OUTPUT
 
   #JOB 2
-  descargar-imagenes:
+  descarga-imagen:
     needs: preparacion-para-descarga
     runs-on: ubuntu-latest
     strategy:
