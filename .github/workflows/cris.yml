@@ -78,8 +78,8 @@ jobs:
         if: ${{ steps.cache-img.outputs.cache-hit != 'true' }}
         uses: minituff/save-image@v1.4
         with:
-          url: ${{ env.image_url }}
-          imagePath: 'img-${{ matrix.dates }}.${{ env.ext }}'
+        url: ${{ env.image_url }}
+        imagePath: 'img-${{ matrix.dates }}.${{ env.ext }}'
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
