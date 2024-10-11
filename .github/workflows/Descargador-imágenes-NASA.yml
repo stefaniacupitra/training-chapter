@@ -113,4 +113,3 @@ jobs:
         with:
           name: response-${{ matrix.fecha }}
           path: ${{ env.response }}
-          retention-days: 1
