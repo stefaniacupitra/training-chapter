@@ -12,7 +12,7 @@ jobs:
   preparacion-para-descarga:
     runs-on: ubuntu-latest
     outputs:
-      dates: ${{ steps.fetch-dates.outputs.dates }}
+      fechas: ${{ steps.fetch-dates.outputs.dates }}  # Cambiado de dates a fechas
 
     steps:
       # 1. Consultar el repositorio para acceder al archivo dates.json
@@ -34,7 +34,7 @@ jobs:
           
           # Leer las fechas y convertirlas en una lista JSON
           DATES=$(jq -c '.dates' "$DATES_FILE")
-          echo "dates=$DATES" >> $GITHUB_OUTPUT
+          echo "dates=$DATES" >> $GITHUB_OUTPUT  # Este valor sigue siendo dates porque corresponde a lo que devuelve jq
 
   # Job dinámico para descargar imágenes basado en la lista de fechas
   descargar-imagen:
@@ -43,7 +43,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        date: ${{ fromJSON(needs.preparacion-para-descarga.outputs.dates) }}  # Convertimos la lista de fechas en una matriz JSON
+        date: ${{ fromJSON(needs.preparacion-para-descarga.outputs.fechas) }}  # Cambiado para usar el nuevo output 'fechas'
 
     steps:
       # 1. Checkout repository
@@ -74,7 +74,7 @@ jobs:
           RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
 
           # Verificar si la respuesta tiene un error
-            echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r)"
+          echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r)"
 
           # Extraer la URL de la imagen
           IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
