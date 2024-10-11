@@ -115,7 +115,7 @@ jobs:
           echo "image_url=$IMAGE_URL" >> $GITHUB_ENV
 
       - name: Descargar imagen usando minituff/save-image@v1.4
-        uses: minituff/save-image@v1.4
+        uses: Minituff/save-image@v1.4
         with:
           image-url: ${{ env.image_url }}
           image-name: img-${{ matrix.fecha }}.jpg
