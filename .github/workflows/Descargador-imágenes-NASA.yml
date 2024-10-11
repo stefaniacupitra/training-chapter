@@ -19,10 +19,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Instalar jq para procesar el archivo JSON
-      - name: Instalar jq
-        run: sudo apt-get install -y jq
-
       # 3. Leer fechas del archivo JSON
       - name: Leer fechas del archivo dates.json
         id: fetch-dates
