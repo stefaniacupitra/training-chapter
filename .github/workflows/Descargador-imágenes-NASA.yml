@@ -24,17 +24,15 @@ jobs:
         id: obtener-fechas
         run: |
           # Ruta al archivo dates.json
-          DATES_FILE="dates.json"
-          
+          ARCHIVO_DE_FECHAS="dates.json"
           # Comprobar si existe el archivo de fechas
-          if [ ! -f "$DATES_FILE" ]; then
-            echo "Archivo no encontrado: $DATES_FILE"
+          if [ ! -f "$ARCHIVO_DE_FECHAS" ]; then
+            echo "Archivo no encontrado: $ARCHIVO_DE_FECHAS"
             exit 1
           fi
-          
           # Leer las fechas y convertirlas en una lista JSON
-          DATES=$(jq -c '.dates' "$DATES_FILE")
-          echo "dates=$DATES" >> $GITHUB_OUTPUT  # Este valor sigue siendo dates porque corresponde a lo que devuelve jq
+          FECHAS=$(jq -c '.dates' "$ARCHIVO_DE_FECHAS")
+          echo "dates=FECHAS" >> $GITHUB_OUTPUT  # Este valor sigue siendo dates porque corresponde a lo que devuelve jq
 
   # Job dinámico para descargar imágenes basado en la lista de fechas
   descargar-imagen:
