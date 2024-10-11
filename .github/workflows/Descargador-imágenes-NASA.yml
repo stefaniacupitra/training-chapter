@@ -53,41 +53,33 @@ jobs:
         env:
           cache-name: imagen_cache
         with:
-          path: img-${{ matrix.fecha }}.jpg  # matrix.date, no matrix.dates
+          path: img-${{ matrix.fecha }}.jpg
           key: cache-img-${{ matrix.fecha }}
           restore-keys: |
             cache-img-
-      
-      # 4. Obtener la imagen de la NASA
+      #STEP 3 - Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
-        id: fetch_image
-        if: ${{ steps.imagen_cache.outputs.cache-hit != 'true' }}  # Correcta referencia sin guion
-        run: |
+        if: ${{ steps.imagen_cache.outputs.cache-hit != 'true' }}
+        run: | #SHELL
           DATE=${{ matrix.fecha }}
           echo "Obteniendo imagen para $DATE..."
-
           # Realizar la solicitud GET a la API de la NASA
           RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
-
           # Verificar si la respuesta tiene un error
           echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r)"
-
           # Extraer la URL de la imagen
           IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
-
           # Descargar la imagen
           IMAGE_NAME="img-$DATE.jpg"
           curl -s -o "$IMAGE_NAME" "$IMAGE_URL"
-
           # Exportar el nombre de la imagen como un artefacto
           echo "Cargando artefacto para $DATE..."
           echo "image_name=$IMAGE_NAME" >> $GITHUB_ENV
-
-      # 5. Subir la imagen como artefacto
+      #STEP 4 - Subir la imagen como artefacto
       - name: Subir imagen como artefacto
-        if: ${{ steps.imagen_cache.outputs.cache-hit != 'true' }}  # Referencia corregida sin guion
-        uses: actions/upload-artifact@v4
+        if: ${{ steps.imagen_cache.outputs.cache-hit != 'true' }}
+        uses: actions/upload-artifact@v4 #ACTIONS
         with:
-          name: Imágenes de la NASA - ${{ matrix.fecha }}
+          name: img-${{ matrix.fecha }}
           path: ${{ env.image_name }}
           retention-days: 1
