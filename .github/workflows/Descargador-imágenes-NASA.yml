@@ -31,8 +31,8 @@ jobs:
             exit 1
           fi
           # Leer las fechas y convertirlas en una lista JSON
-          FECHAS=$(jq -c '.dates' "$ARCHIVO_DE_FECHAS")
-          echo "dates=FECHAS" >> $GITHUB_OUTPUT  # Este valor sigue siendo dates porque corresponde a lo que devuelve jq
+          DATES=$(jq -c '.dates' "$ARCHIVO_DE_FECHAS")
+          echo "dates=$DATES" >> $GITHUB_OUTPUT  # Este valor sigue siendo dates porque corresponde a lo que devuelve jq
 
   # Job dinámico para descargar imágenes basado en la lista de fechas
   descargar-imagen:
