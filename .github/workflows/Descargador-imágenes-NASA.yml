@@ -41,18 +41,17 @@ jobs:
       fail-fast: false
       matrix:
         fecha: ${{ fromJSON(needs.preparacion-para-descarga.outputs.fechas) }}
-
+        
     steps:
-      # 1. Checkout repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Cache
+      #STEP 1 - Consultar el repositorio
+      - name: Consultar repositorio
+        uses: actions/checkout@v4 #ACTIONS
+      #STEP 2 - Logica para usar cache
       - name: Cache
-        id: cache_img  # Cambiado para no usar guiones
-        uses: actions/cache@v4
+        id: imagen_cache
+        uses: actions/cache@v4 #ACTIONS
         env:
-          cache-name: cache_img
+          cache-name: imagen_cache
         with:
           path: img-${{ matrix.fecha }}.jpg  # matrix.date, no matrix.dates
           key: cache-img-${{ matrix.fecha }}
@@ -62,7 +61,7 @@ jobs:
       # 4. Obtener la imagen de la NASA
       - name: Obtener imagen de la NASA
         id: fetch_image
-        if: ${{ steps.cache_img.outputs.cache-hit != 'true' }}  # Correcta referencia sin guion
+        if: ${{ steps.imagen_cache.outputs.cache-hit != 'true' }}  # Correcta referencia sin guion
         run: |
           DATE=${{ matrix.fecha }}
           echo "Obteniendo imagen para $DATE..."
@@ -86,7 +85,7 @@ jobs:
 
       # 5. Subir la imagen como artefacto
       - name: Subir imagen como artefacto
-        if: ${{ steps.cache_img.outputs.cache-hit != 'true' }}  # Referencia corregida sin guion
+        if: ${{ steps.imagen_cache.outputs.cache-hit != 'true' }}  # Referencia corregida sin guion
         uses: actions/upload-artifact@v4
         with:
           name: Imágenes de la NASA - ${{ matrix.fecha }}
