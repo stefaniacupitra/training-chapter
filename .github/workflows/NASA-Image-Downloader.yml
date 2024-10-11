@@ -75,7 +75,8 @@ jobs:
           # Realizar la solicitud GET a la API de la NASA
           RESPONSE=$(curl -s "https://api.nasa.gov/planetary/apod?api_key=${{ secrets.NASA_API_KEY }}&date=$DATE")
 
-    
+          # Verificar si la respuesta tiene un error
+            echo "Error al obtener datos para $DATE: $(echo $RESPONSE | jq -r '.error.message')"
 
           # Extraer la URL de la imagen
           IMAGE_URL=$(echo "$RESPONSE" | jq -r '.url')
