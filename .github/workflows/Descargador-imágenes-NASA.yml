@@ -133,6 +133,16 @@ jobs:
         run: |
           echo "Verificando los artefactos disponibles..."
           ls -alh ${{ github.workspace }}
+
+      - name: Verificar artefactos subidos
+        run: |
+          echo "Artefactos disponibles para subir:"
+          ls -alh ${{ github.workspace }}
+          
+      - name: Esperar antes de intentar descargar
+        run: |
+          echo "Esperando para descargar artefactos..."
+          sleep 10
           
       - name: Download image artifact
         uses: actions/download-artifact@v3
