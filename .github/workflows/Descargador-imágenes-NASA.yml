@@ -128,3 +128,20 @@ jobs:
           name: img-${{ matrix.fecha }}
           path: img-${{ matrix.fecha }}.jpg
           retention-days: 1
+
+  send-email:
+    needs: monitoring-execution
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Send Serenity report by email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: ${{ secrets.SMTP_USERNAME }}  # Direccion de correo del remitente
+          to: "email1@example.com,email2@example.com"  # Correo(s) de destino
+          subject: "Serenity Test Report - ${{ env.current_date }}"
+          body: "Attached is the Serenity Test Report for the latest run."
+          attachments: target/site/serenity/serenity-report-${{ env.current_date }}.html  # Ruta del archivo adjunto
