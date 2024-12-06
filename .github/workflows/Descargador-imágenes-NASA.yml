@@ -143,11 +143,6 @@ jobs:
         run: |
           echo "Esperando para descargar artefactos..."
           sleep 10
-          
-      - name: Download image artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: img-${{ matrix.fecha }}.jpg  # Usa 'matrix.fecha' para descargar el artefacto correspondiente
 
       - name: Send image by email
         uses: dawidd6/action-send-mail@v3
@@ -157,7 +152,7 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           from: ${{ secrets.SMTP_USERNAME }}  # Dirección de correo del remitente
-          to: "email1@example.com,email2@example.com"  # Correo(s) de destino
+          to: "stefania.cupitra@hotmail.com"  # Correo(s) de destino
           subject: "NASA Image - ${{ matrix.fecha }}"
           body: "Attached is the NASA image for ${{ matrix.fecha }}."
           attachments: ${{ github.workspace }}/img-${{ matrix.fecha }}.jpg  # Ruta del archivo descargado
