@@ -134,9 +134,9 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Download Serenity report artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: serenity-report-${{ env.current_date }}
+          name: img-2024-01-01
 
       - name: Send Serenity report by email
         uses: dawidd6/action-send-mail@v3
