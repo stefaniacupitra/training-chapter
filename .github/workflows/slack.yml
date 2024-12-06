@@ -1,44 +1,22 @@
-# Segundo taller practico
+name: prueba
 
-#Descripción
-#Crear un pipeline que exporte como artefacto las imagenes mas populares de la NASA en las fechas definidas en un archivo JSON dentro del repositorio.
-#El pipeline deberá leer el archivo JSON y crear un paralelo por cada fecha dentro del mismo, luego en cada paralelo deberá tomar la fecha y realizar un petición HTTP de tipo GET al API https://api.nasa.gov/planetary/apod?api_key=API_KEY&date=FECHA cambiando el API_KEY y la FECHA (Para obtener el API_KEY debe registrarse en el siguiente link NASA Open APIs) la respuesta del API debe ser almacenada en cache y saltarse el paso de llamar al API en caso de encontrar un registro ya guardado en cache
-#Luego, tome la propiedad url de la respuesta del API (la cual contiene la url de la imagen mas popular de la NASA en esa fecha) y use un action para descargar la imagen, una vez tenga el archivo de la imagen, exporte un artefacto por cada imagen con el nombre img-{fecha} donde debera reemplazar {fecha} por la fecha consultada en el API.
-#Al final se debe obtener un artefacto por cada fecha dentro del archivo JSON, y dentro del artefacto debe estar la imagen mas popular de la NASA en esa fecha
-
-#A evaluar
-
-#En caso de que falle un paralelo, los demás deben seguir ejecutandose
-#El cache debe almacenar la respuesta del API  según la fecha consultada y saltar la consulta al API en caso de encontrar la llave
-#Los paralelos deben ser dinámicos, es decir que si hay mas fechas, debe haber mas paralelos
-#Debe buscar y usar un action para la descarga de las imágenes
-#Debe almacenar y leer el API key desde un secreto del repositorio
-#Usar únicamente el archivo JSON del repositorio
-#Debe haber un artefacto por imagen y cada uno debe tener como nombre ?img-{fecha}?
-#Los artefactos deben tener un tiempo de duración de 1 día
-
-name: Imágenes de la NASA
-
-#EVENTO
+# Evento
 on:
   push:
     branches:
       - main
 
-#JOBS
+# Jobs
 jobs:
-
-  #JOB 2
-  descarga-imagen:
+  envio-sms:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Notificar a Slack en caso de éxito
         if: success()
         uses: slackapi/slack-github-action@v1.22.0
         with:
-          payload: '{"text":"CI Pipeline complete!","channel-id":"#automatizacion-pruebas-prd"}'
+          # Usamos 'payload' para enviar el mensaje en formato JSON
+          payload: '{"text":"CI Pipeline complete!","channel":"#automatizacion-pruebas-prd"}'
           slack-message: 'Test run completed successfully'
-          webhookUrl: ${{ secrets.SLACK_WEBHOOK_URL }}
-  
-  
+          webhookUrl: ${{ secrets.SLACK_WEBHOOK_URL }}  # URL del Webhook
