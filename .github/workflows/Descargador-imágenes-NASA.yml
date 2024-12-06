@@ -23,7 +23,7 @@ name: Imágenes de la NASA
 on:
   push:
     branches:
-      - main
+      - mainos
 
 #JOBS
 jobs:
