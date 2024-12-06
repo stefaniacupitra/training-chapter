@@ -144,17 +144,18 @@ jobs:
           echo "Esperando para descargar artefactos..."
           sleep 10
 
-      - name: Send image by email
-        uses: dawidd6/action-send-mail@v3
+      - name: Notify Slack on Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.22.0
         with:
-          server_address: ${{ secrets.SMTP_HOST }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          from: ${{ secrets.SMTP_USERNAME }}  # Dirección de correo del remitente
-          to: "stefania.cupitra@hotmail.com"  # Correo(s) de destino
-          subject: "NASA Image - ${{ matrix.fecha }}"
-          body: "Attached is the NASA image for ${{ matrix.fecha }}."
-          attachments: ${{ github.workspace }}/img-${{ matrix.fecha }}.jpg  # Ruta del archivo descargado
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          text: "? Test run completed successfully"
+
+      - name: Notify Slack on Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.22.0
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          text: "? Test run failed"
   
   
