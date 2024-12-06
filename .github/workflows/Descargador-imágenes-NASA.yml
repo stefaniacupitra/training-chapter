@@ -148,6 +148,7 @@ jobs:
         if: success()
         uses: slackapi/slack-github-action@v1.22.0
         with:
+          payload: '{"text":"CI Pipeline complete!","channel":"#automatizacion-pruebas-prd"}'
           slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           text: "? Test run completed successfully"
 
