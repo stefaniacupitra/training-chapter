@@ -144,13 +144,13 @@ jobs:
           echo "Esperando para descargar artefactos..."
           sleep 10
 
-      - name: Notify Slack on Success
+      - name: Notificar a Slack en caso de éxito
         if: success()
         uses: slackapi/slack-github-action@v1.22.0
         with:
           payload: '{"text":"CI Pipeline complete!","channel":"#automatizacion-pruebas-prd"}'
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-          text: "? Test run completed successfully"
+          slack-message: 'Test run completed successfully'
+          webhookUrl: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Notify Slack on Failure
         if: failure()
