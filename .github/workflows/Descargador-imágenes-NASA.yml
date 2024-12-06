@@ -129,24 +129,24 @@ jobs:
           path: img-${{ matrix.fecha }}.jpg
           retention-days: 1
     
-    send-email:
-      needs: preparacion-para-descarga
-      runs-on: ubuntu-22.04
-      steps:
-        - name: Download Serenity report artifact
-          uses: actions/download-artifact@v2
-          with:
-            name: serenity-report-${{ env.current_date }}
+  send-email:
+    needs: preparacion-para-descarga
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Download Serenity report artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: serenity-report-${{ env.current_date }}
 
-        - name: Send Serenity report by email
-          uses: dawidd6/action-send-mail@v3
-          with:
-            server_address: ${{ secrets.SMTP_HOST }}
-            server_port: ${{ secrets.SMTP_PORT }}
-            username: ${{ secrets.SMTP_USERNAME }}
-            password: ${{ secrets.SMTP_PASSWORD }}
-            from: ${{ secrets.SMTP_USERNAME }}  # Dirección de correo del remitente
-            to: "email1@example.com,email2@example.com"  # Correo(s) de destino
-            subject: "Serenity Test Report - ${{ env.current_date }}"
-            body: "Attached is the Serenity Test Report for the latest run."
-            attachments: ${{ github.workspace }}/serenity-report-${{ env.current_date }}.html  # Ruta correcta del archivo descargado
+      - name: Send Serenity report by email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_HOST }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          from: ${{ secrets.SMTP_USERNAME }}  # Dirección de correo del remitente
+          to: "email1@example.com,email2@example.com"  # Correo(s) de destino
+          subject: "Serenity Test Report - ${{ env.current_date }}"
+          body: "Attached is the Serenity Test Report for the latest run."
+          attachments: ${{ github.workspace }}/serenity-report-${{ env.current_date }}.html  # Ruta correcta del archivo descargado
