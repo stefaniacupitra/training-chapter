@@ -128,11 +128,7 @@ jobs:
           name: img-${{ matrix.fecha }}
           path: img-${{ matrix.fecha }}.jpg
           retention-days: 1
-    
-  send-email:
-    needs: descarga-imagen
-    runs-on: ubuntu-22.04
-    steps:
+          
       - name: Verificar artefactos
         run: |
           echo "Verificando los artefactos disponibles..."
