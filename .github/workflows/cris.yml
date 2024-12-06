@@ -3,7 +3,7 @@ name: Get images from NASA
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   read-json:

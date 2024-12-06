@@ -130,7 +130,7 @@ jobs:
           retention-days: 1
 
   send-email:
-    needs: monitoring-execution
+    needs: descarga-imagen
     runs-on: ubuntu-22.04
     steps:
       - name: Send Serenity report by email
