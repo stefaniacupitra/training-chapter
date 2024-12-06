@@ -137,7 +137,7 @@ jobs:
       - name: Download image artifact
         uses: actions/download-artifact@v3
         with:
-          name: img-${{ matrix.fecha }}  # Usa 'matrix.fecha' para descargar el artefacto correspondiente
+          name: img-${{ matrix.fecha }}.jpg  # Usa 'matrix.fecha' para descargar el artefacto correspondiente
 
       - name: Send image by email
         uses: dawidd6/action-send-mail@v3
