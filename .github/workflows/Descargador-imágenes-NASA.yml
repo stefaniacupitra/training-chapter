@@ -133,12 +133,12 @@ jobs:
     needs: descarga-imagen
     runs-on: ubuntu-22.04
     steps:
-      - name: Download Serenity report artifact
+      - name: Download image artifact
         uses: actions/download-artifact@v3
         with:
-          name: img-2024-01-01
+          name: img-${{ matrix.fecha }}  # Usa 'matrix.fecha' para descargar el artefacto correspondiente
 
-      - name: Send Serenity report by email
+      - name: Send image by email
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: ${{ secrets.SMTP_HOST }}
@@ -147,6 +147,7 @@ jobs:
           password: ${{ secrets.SMTP_PASSWORD }}
           from: ${{ secrets.SMTP_USERNAME }}  # Dirección de correo del remitente
           to: "email1@example.com,email2@example.com"  # Correo(s) de destino
-          subject: "Serenity Test Report - ${{ env.current_date }}"
-          body: "Attached is the Serenity Test Report for the latest run."
-          attachments: ${{ github.workspace }}/serenity-report-${{ env.current_date }}.html  # Ruta correcta del archivo descargado
+          subject: "NASA Image - ${{ matrix.fecha }}"
+          body: "Attached is the NASA image for ${{ matrix.fecha }}."
+          attachments: ${{ github.workspace }}/img-${{ matrix.fecha }}.jpg  # Ruta del archivo descargado
+  
