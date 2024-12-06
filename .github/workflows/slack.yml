@@ -14,9 +14,7 @@ jobs:
     steps:
       - name: Notificar a Slack en caso de éxito
         if: success()
-        uses: slackapi/slack-github-action@v1.22.0
-        with:
-          # Usamos 'payload' para enviar el mensaje en formato JSON
-          payload: '{"text":"CI Pipeline complete!","channel":"#automatizacion-pruebas-prd"}'
-          slack-message: 'Test run completed successfully'
-          webhookUrl: ${{ secrets.SLACK_WEBHOOK_URL }}  # URL del Webhook
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+          --data '{"text":"CI Pipeline complete!","channel":"#automatizacion-pruebas-prd"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
