@@ -130,7 +130,7 @@ jobs:
           retention-days: 1
     
   send-email:
-    needs: preparacion-para-descarga
+    needs: descarga-imagen
     runs-on: ubuntu-22.04
     steps:
       - name: Download Serenity report artifact
