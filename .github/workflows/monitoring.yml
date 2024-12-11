@@ -58,21 +58,27 @@ jobs:
 
       - name: Get Slack upload URL
         run: |
+          # Usa la variable file_size que calculaste anteriormente
           response=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -H "Accept: application/json" \
-            -d '{"filename":"serenity-summary.html","length":"60000"}' \
+            -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
+            -d "filename=serenity-summary.html" \
+            -d "length=${{ env.file_size }}" \
             https://slack.com/api/files.getUploadURLExternal)
+          
           echo "$response"
+          
+          # Extrae la URL de carga de la respuesta
           upload_url=$(echo "$response" | jq -r '.upload_url')
+          
+          # Verifica si se obtuvo correctamente la URL de carga
           if [ "$upload_url" == "null" ]; then
             echo "Error fetching upload URL: $response"
             exit 1
           fi
+
+          # Guarda la URL de carga para usarla en los siguientes pasos
           echo "upload_url=$upload_url" >> $GITHUB_ENV
-
-
 
       - name: Upload file to Slack
         run: |
