@@ -50,6 +50,18 @@ jobs:
           name: serenity-report-${{ env.current_date }}
           path: target/site/serenity/serenity-summary.html
 
+      - name: Calculate file size in bytes
+        run: |
+          FILE="target/site/serenity/serenity-summary.html" # Cambia por la ruta de tu archivo
+          if [ -f "$FILE" ]; then
+            SIZE=$(stat --format=%s "$FILE")
+            echo "File size in bytes: $SIZE"
+            echo "file_size=$SIZE" >> $GITHUB_ENV
+          else
+            echo "File not found: $FILE"
+            exit 1
+          fi
+
       - name: Notificar a Slack
         run: |
           if [ "${{ env.tests_failed }}" == "true" ]; then
