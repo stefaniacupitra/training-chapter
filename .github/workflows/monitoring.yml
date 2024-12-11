@@ -94,10 +94,13 @@ jobs:
           echo "respuesta: $response_upload"
           
           # Extrae el número de la respuesta (51461)
-          extracted_value=$(echo $response_upload | awk -F ' - ' '{print $2}')
+          file_id=$(echo $response_upload | awk -F ' - ' '{print $2}')
 
           # Imprime el número extraído
-          echo "File upload size: $extracted_value"
+          echo "File upload size: $file_id"
+          
+          # Guarda la URL de carga para usarla en los siguientes pasos
+          echo "file_id=$file_id" >> $GITHUB_ENV
 #
 #          # Extrae el file_id de la respuesta
 #          file_id=$(echo "$response_upload" | jq -r '.file_id')
