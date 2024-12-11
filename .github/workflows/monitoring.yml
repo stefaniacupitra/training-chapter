@@ -89,8 +89,17 @@ jobs:
 
       - name: Complete Slack upload
         run: |
+          # Extraemos solo el file_id
+          file_id=$(echo "$response" | jq -r '.file_id')
+          if [ "$file_id" == "null" ]; then
+            echo "Error: file_id not found"
+            exit 1
+          fi
+          
+          # Realizamos la llamada para completar la carga
           curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
             -H "Content-Type: application/json" \
-            -d '{"files":[{"id":"'"$(basename "${{ env.upload_url }}")"'"}]}' \
+            -d '{"files":[{"id":"'"$file_id"'"}]}' \
             https://slack.com/api/files.completeUploadExternal
+
