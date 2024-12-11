@@ -62,7 +62,7 @@ jobs:
           response=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
             -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
-            -d "filename=serenity-summary.html" \
+            -d "filename=target/site/serenity/serenity-summary.html" \
             -d "length=${{ env.file_size }}" \
             https://slack.com/api/files.getUploadURLExternal)
           
@@ -101,7 +101,8 @@ jobs:
             "${{ env.upload_url }}")
 
           # Imprime la respuesta para depuración
-          echo "$response_upload"
+          echo "prueb"
+          echo "prueb $response_upload"
 #
 #          # Extrae el file_id de la respuesta
 #          file_id=$(echo "$response_upload" | jq -r '.file_id')
@@ -120,7 +121,7 @@ jobs:
           # Realiza la llamada para completar la carga del archivo
           curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
-            -H "Content-Type: application/json" \
+            -H "Content-Type: application/json; text/html; charset=utf-8" \
             -d '{"files":[{"id":"'"$file_id"'"}]}' \
             https://slack.com/api/files.completeUploadExternal
 
