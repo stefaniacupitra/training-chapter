@@ -57,11 +57,11 @@ jobs:
           fi
 
       - name: Get Slack upload URL
-        id: get-upload-url
         run: |
           response=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
             -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
             -d "{\"filename\":\"serenity-summary.html\",\"length\":${{ env.file_size }}}" \
             https://slack.com/api/files.getUploadURLExternal)
           echo "$response"
@@ -71,6 +71,7 @@ jobs:
             exit 1
           fi
           echo "upload_url=$upload_url" >> $GITHUB_ENV
+
 
 
       - name: Upload file to Slack
