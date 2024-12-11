@@ -50,7 +50,7 @@ jobs:
           FILE="target/site/serenity/serenity-summary.html"
           if [ -f "$FILE" ]; then
             SIZE=$(stat --format=%s "$FILE")
-            echo "file_size=$SIZE" >> $GITHUB_ENV
+            echo "size=$SIZE" >> $GITHUB_ENV
           else
             echo "File not found: $FILE"
             exit 1
@@ -58,12 +58,12 @@ jobs:
 
       - name: Get Slack upload URL
         run: |
-          # Usa la variable file_size que calculaste anteriormente
+          # Usa la variable size que calculaste anteriormente
           response=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
             -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
             -d "filename=target/site/serenity/serenity-summary.html" \
-            -d "length=${{ env.file_size }}" \
+            -d "length=${{ env.size }}" \
             https://slack.com/api/files.getUploadURLExternal)
           
           echo "$response"
@@ -90,14 +90,13 @@ jobs:
           "${{ env.upload_url }}")
 
           # Imprime la respuesta para depuración
-          echo "rspuesta:"
           echo "respuesta: $response_upload"
           
           # Extrae el número de la respuesta (51461)
           file_id=$(echo $response_upload | awk -F ' - ' '{print $2}')
 
           # Imprime el número extraído
-          echo "File upload size: $file_id"
+          echo "id: $file_id"
           
           # Guarda la URL de carga para usarla en los siguientes pasos
           echo "file_id=$file_id" >> $GITHUB_ENV
@@ -120,7 +119,8 @@ jobs:
           curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
             -H "Content-Type: application/json; text/html; charset=utf-8" \
-            -d '{"files":[{"id":"'"$file_id"'"}]}' \
+            -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
             https://slack.com/api/files.completeUploadExternal
+
 
 
