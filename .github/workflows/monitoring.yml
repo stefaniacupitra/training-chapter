@@ -60,7 +60,7 @@ jobs:
         run: |
           # Usa la variable size que calculaste anteriormente
           response=$(curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_BOTS }}" \
             -H "Content-Type: application/x-www-form-urlencoded; charset=utf-8" \
             -d "filename=target/site/serenity/serenity-summary.html" \
             -d "length=${{ env.size }}" \
@@ -129,7 +129,7 @@ jobs:
         run: |
           # Realiza la llamada para completar la carga del archivo
           curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_BOTS }}" \
             -H "Content-Type: application/json; text/html; charset=utf-8" \
             -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
             https://slack.com/api/files.completeUploadExternal
@@ -138,7 +138,7 @@ jobs:
         run: |
           # Realiza la llamada para completar la carga del archivo
           curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_USER }}" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "file==${{ env.file_id }}" \
             https://slack.com/api/files.sharedPublicURL
@@ -148,7 +148,7 @@ jobs:
         run: |
           # Realiza la llamada para compartir el archivo en el canal
           curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_USER }}" \
             -H "Content-Type: application/json" \
             -d '{"channels": "#automatizacion-pruebas-prd", "file": "'${{ env.file_id }}'"}' \
             https://slack.com/api/files.share
