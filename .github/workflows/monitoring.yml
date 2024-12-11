@@ -1,0 +1,63 @@
+name: monitor-production
+
+on:
+  push:
+    branches:
+      - feature**
+  schedule:
+    - cron: "0 21 * * Tue,Wed,Thu"
+
+jobs:
+  monitoring-execution:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java and Gradle
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Clean and prepare environment
+        run: gradle clean clearReports
+
+      - name: Run Serenity tests
+        id: run-tests
+        run: |
+          gradle test --tests TestRunnerProduction || echo "tests_failed=true" >> $GITHUB_ENV
+
+      - name: Generate reports
+        run: gradle reports
+
+      - name: List files in workspace
+        run: ls -alh
+
+      - name: List files in a specific directory
+        run: ls -alh target/site/serenity
+
+      - name: Set current date and time
+        id: date
+        run: echo "current_date=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+
+      - name: Upload Serenity report for sharing
+        uses: actions/upload-artifact@v4
+        with:
+          name: serenity-report-${{ env.current_date }}
+          path: target/site/serenity/serenity-summary.html
+
+      - name: Notificar a Slack
+        run: |
+          if [ "${{ env.tests_failed }}" == "true" ]; then
+            curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":":rotating_light:¡Atención equipo!:rotating_light:\n\nParece que algo no anda bien con los widgets/banners :scream:. ¡Se presentó un pequeño fallo! :hammer_and_wrench:\n\n:mag: Revisa por favor para que todo vuelva a la normalidad. ¡Gracias por estar al tanto! :spock-hand:","channel":"#automatizacion-pruebas-prd"}' \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
+          else
+            curl -X POST -H 'Content-type: application/json' \
+            --data '{"text":":confetti_ball: ¡Éxito total, equipo! :confetti_ball:\n\nLas pruebas realizadas en producción a los aliados salieron de maravilla :sparkles: :muscle:.\n\nTodo está funcionando como debería. ¡Gran trabajo! :tada: Sigamos brillando. :rocket:","channel":"#automatizacion-pruebas-prd"}' \
+            ${{ secrets.SLACK_WEBHOOK_URL }}
+          fi
