@@ -1,0 +1,90 @@
+defaultTasks 'clean', 'test', 'aggregate'
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+group 'org.automation.web'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+tasks.register('generateHtmlReports', Copy) {
+    from 'target/site/serenity'
+    into 'build/reports/serenity'
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:3.2.5")
+        classpath("net.serenity-bdd:serenity-single-page-report:2.1.4")
+    }
+}
+
+ext {
+    serenityVersion = '3.6.12'
+    slf4jVersion = '2.0.1'
+    serenityCoreVersion = '3.6.12'
+    junitVersion = '3.4.1'
+    assertJVersion = '3.24.2'
+    selenium = '4.8.1'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'ISO-8859-1'
+}
+
+tasks.withType(Test) {
+    systemProperty "file.encoding", "ISO-8859-1"
+}
+
+serenity {
+    reports = ["single-page-html"]
+    testRoot = "starter"
+    requirementsDir = "src/test/resources/features"
+}
+
+dependencies {
+    implementation "net.serenity-bdd:serenity-core:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-junit:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-cucumber:${serenityCoreVersion}",
+            "org.assertj:assertj-core:${assertJVersion}",
+            "org.slf4j:slf4j-simple:${slf4jVersion}",
+            "org.seleniumhq.selenium:selenium-java:${selenium}"
+    implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    testImplementation "net.serenity-bdd:serenity-browserstack:${serenityVersion}"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.9.1'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+}
+
+test {
+    testLogging.showStandardStreams = true
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+    systemProperties System.getProperties()
+    systemProperty "cucumber.options", System.getProperty("cucumber.options")
+    systemProperty "cucumber.filter.tags", System.getProperty("cucumber.filter.tags")
+}
+
+tasks.withType(Test) {
+    include '**/TestRunner.class'
+    include '**/TestRunnerProduction.class'
+}
+
+gradle.startParameter.continueOnFailure = true
+
+test.finalizedBy(aggregate)
