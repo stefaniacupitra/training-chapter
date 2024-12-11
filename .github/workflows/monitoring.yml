@@ -92,16 +92,16 @@ jobs:
           # Guarda la URL de carga para usarla en los siguientes pasos
           echo "file_id=$file_id" >> $GITHUB_ENV
 
-#      - name: Upload file to Slack
-#        run: |
-#          # Realiza la carga del archivo y guarda la respuesta en una variable
-#          response_upload=$(curl -X PUT \
-#            -H "Content-Type: text/html" \
-#            --data-binary @target/site/serenity/serenity-summary.html \
-#            "${{ env.upload_url }}")
-#
-#          # Imprime la respuesta para depuración
-#          echo "$response_upload"
+      - name: Upload file to Slack
+        run: |
+          # Realiza la carga del archivo y guarda la respuesta en una variable
+          response_upload=$(curl -X PUT \
+            -H "Content-Type: text/html" \
+            --data-binary @target/site/serenity/serenity-summary.html \
+            "${{ env.upload_url }}")
+
+          # Imprime la respuesta para depuración
+          echo "$response_upload"
 #
 #          # Extrae el file_id de la respuesta
 #          file_id=$(echo "$response_upload" | jq -r '.file_id')
