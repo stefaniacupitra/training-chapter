@@ -3,7 +3,7 @@ name: monitor-production
 on:
   push:
     branches:
-      - main**
+      - main
   schedule:
     - cron: "0 21 * * Tue,Wed,Thu"
 
@@ -44,32 +44,45 @@ jobs:
         id: date
         run: echo "current_date=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
-      - name: Upload Serenity report for sharing
-        uses: actions/upload-artifact@v4
-        with:
-          name: serenity-report-${{ env.current_date }}
-          path: target/site/serenity/serenity-summary.html
-
       - name: Calculate file size in bytes
+        id: calculate-size
         run: |
-          FILE="target/site/serenity/serenity-summary.html" # Cambia por la ruta de tu archivo
+          FILE="target/site/serenity/serenity-summary.html"
           if [ -f "$FILE" ]; then
             SIZE=$(stat --format=%s "$FILE")
-            echo "File size in bytes: $SIZE"
             echo "file_size=$SIZE" >> $GITHUB_ENV
           else
             echo "File not found: $FILE"
             exit 1
           fi
 
-      - name: Notificar a Slack
+      - name: Get Slack upload URL
+        id: get-upload-url
         run: |
-          if [ "${{ env.tests_failed }}" == "true" ]; then
-            curl -X POST -H 'Content-type: application/json' \
-            --data '{"text":":rotating_light:¡Atención equipo!:rotating_light:\n\nParece que algo no anda bien con los widgets/banners :scream:. ¡Se presentó un pequeño fallo! :hammer_and_wrench:\n\n:mag: Revisa por favor para que todo vuelva a la normalidad. ¡Gracias por estar al tanto! :spock-hand:","channel":"#automatizacion-pruebas-prd\n\n/?. .?\?"}' \
-            ${{ secrets.SLACK_WEBHOOK_URL }}
-          else
-            curl -X POST -H 'Content-type: application/json' \
-            --data '{"text":":confetti_ball: ¡Éxito total, equipo! :confetti_ball:\n\nLas pruebas realizadas en producción a los aliados salieron de maravilla :sparkles: :muscle:.\n\nTodo está funcionando como debería. ¡Gran trabajo! :tada: Sigamos brillando. :rocket:","channel":"#automatizacion-pruebas-prd\n\n???"}' \
-            ${{ secrets.SLACK_WEBHOOK_URL }}
+          response=$(curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"filename":"serenity-summary.html","length":'"${{ env.file_size }}"}' \
+            https://slack.com/api/files.getUploadURLExternal)
+          echo "$response"
+          upload_url=$(echo "$response" | jq -r '.upload_url')
+          if [ "$upload_url" == "null" ]; then
+            echo "Error fetching upload URL: $response"
+            exit 1
           fi
+          echo "upload_url=$upload_url" >> $GITHUB_ENV
+
+      - name: Upload file to Slack
+        run: |
+          curl -X PUT \
+            -H "Content-Type: text/html" \
+            --data-binary @target/site/serenity/serenity-summary.html \
+            "${{ env.upload_url }}"
+
+      - name: Complete Slack upload
+        run: |
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"files":[{"id":"'"$(basename "${{ env.upload_url }}")"'"}]}' \
+            https://slack.com/api/files.completeUploadExternal
