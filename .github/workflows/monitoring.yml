@@ -54,10 +54,10 @@ jobs:
         run: |
           if [ "${{ env.tests_failed }}" == "true" ]; then
             curl -X POST -H 'Content-type: application/json' \
-            --data '{"text":":rotating_light:¡Atención equipo!:rotating_light:\n\nParece que algo no anda bien con los widgets/banners :scream:. ¡Se presentó un pequeño fallo! :hammer_and_wrench:\n\n:mag: Revisa por favor para que todo vuelva a la normalidad. ¡Gracias por estar al tanto! :spock-hand:","channel":"#automatizacion-pruebas-prd"}' \
+            --data '{"text":":rotating_light:¡Atención equipo!:rotating_light:\n\nParece que algo no anda bien con los widgets/banners :scream:. ¡Se presentó un pequeño fallo! :hammer_and_wrench:\n\n:mag: Revisa por favor para que todo vuelva a la normalidad. ¡Gracias por estar al tanto! :spock-hand:","channel":"#automatizacion-pruebas-prd\n\n/?. .?\?"}' \
             ${{ secrets.SLACK_WEBHOOK_URL }}
           else
             curl -X POST -H 'Content-type: application/json' \
-            --data '{"text":":confetti_ball: ¡Éxito total, equipo! :confetti_ball:\n\nLas pruebas realizadas en producción a los aliados salieron de maravilla :sparkles: :muscle:.\n\nTodo está funcionando como debería. ¡Gran trabajo! :tada: Sigamos brillando. :rocket:","channel":"#automatizacion-pruebas-prd"}' \
+            --data '{"text":":confetti_ball: ¡Éxito total, equipo! :confetti_ball:\n\nLas pruebas realizadas en producción a los aliados salieron de maravilla :sparkles: :muscle:.\n\nTodo está funcionando como debería. ¡Gran trabajo! :tada: Sigamos brillando. :rocket:","channel":"#automatizacion-pruebas-prd\n\n???"}' \
             ${{ secrets.SLACK_WEBHOOK_URL }}
           fi
