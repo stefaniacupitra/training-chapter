@@ -134,5 +134,25 @@ jobs:
             -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
             https://slack.com/api/files.completeUploadExternal
 
+      - name: Public
+        run: |
+          # Realiza la llamada para completar la carga del archivo
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "file==${{ env.file_id }}" \
+            https://slack.com/api/files.sharedPublicURL
+
+
+      - name: Compartir archivo en un canal
+        run: |
+          # Realiza la llamada para compartir el archivo en el canal
+          curl -s -X POST \
+            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"channels": "#automatizacion-pruebas-prd", "file": "'${{ env.file_id }}'"}' \
+            https://slack.com/api/files.share
+
+
 
 
