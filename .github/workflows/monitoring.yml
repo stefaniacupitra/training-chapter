@@ -96,9 +96,10 @@ jobs:
         run: |
           # Realiza la carga del archivo y guarda la respuesta en una variable
           response_upload=$(curl -X PUT \
-            -H "Content-Type: text/html" \
-            --data-binary @target/site/serenity/serenity-summary.html \
-            "${{ env.upload_url }}")
+          -H "Content-Type: text/html" \
+          -H "Cookie: b=13c64025dfc69e83ce80ae4049ba7bb0; utm=%7B%7D; x=13c64025dfc69e83ce80ae4049ba7bb0.1733948334" \
+          --data-binary @target/site/serenity/serenity-summary.html \
+          "https://files.slack.com/upload/v1/CwABAAAAXAoAAWdBlIC-V8wICgACGBA4as95d7AMAAMLAAEAAAALVDA4M1hMV1FITjALAAIAAAALVTA4NDBHS0RWTlcLAAMAAAALRjA4NTM0UVQ1UzUACgAEAAAAAAAAyQUACwACAAAAFBPpSbvDM-X0lhpxGSyGxD72DRjOAA")
 
           # Imprime la respuesta para depuración
           echo "prueb"
