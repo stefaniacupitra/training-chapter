@@ -95,7 +95,7 @@ jobs:
       - name: Upload file to Slack
         run: |
           # Realiza la carga del archivo y guarda la respuesta en una variable
-          response_upload=$(curl -X PUT \
+          response_upload=$(curl -s -X POST \
           -H "Content-Type: text/html" \
           -H "Cookie: b=13c64025dfc69e83ce80ae4049ba7bb0; utm=%7B%7D; x=13c64025dfc69e83ce80ae4049ba7bb0.1733948334" \
           --data-binary @target/site/serenity/serenity-summary.html \
