@@ -87,11 +87,11 @@ jobs:
           -H "Content-Type: text/html" \
           -H "Cookie: b=13c64025dfc69e83ce80ae4049ba7bb0; utm=%7B%7D; x=13c64025dfc69e83ce80ae4049ba7bb0.1733948334" \
           --data-binary @target/site/serenity/serenity-summary.html \
-          "https://files.slack.com/upload/v1/CwABAAAAXAoAAWdBlIC-V8wICgACGBA4as95d7AMAAMLAAEAAAALVDA4M1hMV1FITjALAAIAAAALVTA4NDBHS0RWTlcLAAMAAAALRjA4NTM0UVQ1UzUACgAEAAAAAAAAyQUACwACAAAAFBPpSbvDM-X0lhpxGSyGxD72DRjOAA")
+          "${{ env.upload_url }}")
 
           # Imprime la respuesta para depuración
-          echo "prueb"
-          echo "prueb $response_upload"
+          echo "rspuesta:"
+          echo "respuesta: $response_upload"
           
           # Extrae el número de la respuesta (51461)
           extracted_value=$(echo $response_upload | awk -F ' - ' '{print $2}')
