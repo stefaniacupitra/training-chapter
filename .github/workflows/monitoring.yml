@@ -79,6 +79,18 @@ jobs:
 
           # Guarda la URL de carga para usarla en los siguientes pasos
           echo "upload_url=$upload_url" >> $GITHUB_ENV
+          
+          # Extrae la URL de carga de la respuesta
+          file_id=$(echo "$response" | jq -r '.file_id')
+          
+          # Verifica si se obtuvo correctamente la URL de carga
+          if [ "$file_id" == "null" ]; then
+            echo "Error fetching upload URL: $response"
+            exit 1
+          fi
+
+          # Guarda la URL de carga para usarla en los siguientes pasos
+          echo "file_id=$file_id" >> $GITHUB_ENV
 
       - name: Upload file to Slack
         run: |
@@ -93,13 +105,13 @@ jobs:
           echo "respuesta: $response_upload"
           
           # Extrae el número de la respuesta (51461)
-          file_id=$(echo $response_upload | awk -F ' - ' '{print $2}')
+          id=$(echo $response_upload | awk -F ' - ' '{print $2}')
 
           # Imprime el número extraído
-          echo "id: $file_id"
+          echo "id: $id"
           
           # Guarda la URL de carga para usarla en los siguientes pasos
-          echo "file_id=$file_id" >> $GITHUB_ENV
+          echo "id=$id" >> $GITHUB_ENV
 #
 #          # Extrae el file_id de la respuesta
 #          file_id=$(echo "$response_upload" | jq -r '.file_id')
