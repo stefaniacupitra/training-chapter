@@ -62,7 +62,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN }}" \
             -H "Content-Type: application/json" \
             -H "Accept: application/json" \
-            -d "{\"filename\":\"serenity-summary.html\",\"length\":${{ env.file_size }}}" \
+            -d '{"filename":"serenity-summary.html","length":60000}' \
             https://slack.com/api/files.getUploadURLExternal)
           echo "$response"
           upload_url=$(echo "$response" | jq -r '.upload_url')
