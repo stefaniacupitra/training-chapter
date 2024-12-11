@@ -3,7 +3,7 @@ name: monitor-production
 on:
   push:
     branches:
-      - feature**
+      - main**
   schedule:
     - cron: "0 21 * * Tue,Wed,Thu"
 
