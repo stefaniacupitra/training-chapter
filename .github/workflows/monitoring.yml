@@ -121,20 +121,22 @@ jobs:
           -H "Content-Type: application/json; text/html; charset=utf-8" \
           -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
           https://slack.com/api/files.completeUploadExternal)
-          
-          echo "$response_url"
-          
+        
+          # Imprime la respuesta para depuración
+          echo "Slack API response: $response_url"
+        
           # Extrae la URL de carga de la respuesta
-          url_private=$(echo "response_url" | jq -r '.url_private')
+          url_private=$(echo "$response_url" | jq -r '.files[0].url_private')
           
           # Verifica si se obtuvo correctamente la URL de carga
-          if [ "$url_private" == "null" ]; then
-            echo "Error fetching upload URL: $response_url"
-            exit 1
+          if [ "$url_private" == "null" ] || [ -z "$url_private" ]; then
+          echo "Error fetching upload URL: $response_url"
+          exit 1
           fi
-
+          
           # Guarda la URL de carga para usarla en los siguientes pasos
           echo "url_private=$url_private" >> $GITHUB_ENV
+
 
 
 
