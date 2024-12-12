@@ -136,6 +136,9 @@ jobs:
           
           # Guarda la URL de carga para usarla en los siguientes pasos
           echo "url_private=$url_private" >> $GITHUB_ENV
+          
+          # Imprime la respuesta para depuración
+          echo "URL html: $url_private"
 
 
 
