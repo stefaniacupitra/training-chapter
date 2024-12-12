@@ -112,32 +112,20 @@ jobs:
           
           # Guarda la URL de carga para usarla en los siguientes pasos
           echo "id=$id" >> $GITHUB_ENV
-#
-#          # Extrae el file_id de la respuesta
-#          file_id=$(echo "$response_upload" | jq -r '.file_id')
-#
-#          # Verifica si se obtuvo correctamente el file_id
-#          if [ "$file_id" == "null" ]; then
-#            echo "Error: file_id not found"
-#            exit 1
-#          fi
-#
-#          # Guarda el file_id para usarlo en el siguiente paso
-#          echo "file_id=$file_id" >> $GITHUB_ENV
 
       - name: Complete Slack upload
         run: |
           # Realiza la llamada para completar la carga del archivo
-          response=$(curl -s -X POST \
+          response_url=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_BOTS }}" \
             -H "Content-Type: application/json; text/html; charset=utf-8" \
             -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
             https://slack.com/api/files.completeUploadExternal)
           
-          echo "$response"
+          echo "response_url"
           
           # Extrae la URL de carga de la respuesta
-          url_private=$(echo "$response" | jq -r '.url_private')
+          url_private=$(echo "response_url" | jq -r '.url_private')
           
           # Verifica si se obtuvo correctamente la URL de carga
           if [ "$url_private" == "null" ]; then
