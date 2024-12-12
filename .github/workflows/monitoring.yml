@@ -141,6 +141,21 @@ jobs:
           echo "URL html: $url_private"
 
 
+      - name: Notificar a Slack
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          tests_failed: ${{ env.tests_failed }}
+          CHANNEL: "#automatizacion-pruebas-prd"
+        run: |
+          ZIP_FILE="serenity-report-${{ env.current_date }}.zip"
+          
+          if [ "$tests_failed" == "true" ]; then
+            MESSAGE=":rotating_light:¡Atención equipo!:rotating_light:\n\nParece que algo no anda bien con los widgets/banners :scream:. ¡Se presentó un pequeño fallo! :hammer_and_wrench:\n\n:mag: Revisa por favor para que todo vuelva a la normalidad. ¡Gracias por estar al tanto! :spock-hand:\n\n\n\n:warning:Revisa el reporte de pruebas aquí: [enlace]. No olvides instalar ModHeader y agregar tu token de Slack.:warning:\n\n\n\n:cat:"
+          else
+            MESSAGE=":confetti_ball: ¡Éxito total, equipo! :confetti_ball:\n\nLas pruebas realizadas en producción a los aliados salieron de maravilla :sparkles: :muscle:.\n\nTodo está funcionando como debería. ¡Gran trabajo! :tada: Sigamos brillando. :rocket:\n\n\n\n:warning:Revisa el reporte de pruebas aquí: [enlace]. No olvides instalar ModHeader y agregar tu token de Slack.:warning:\n\n\n\n:cat:"
+          fi
+
+
 
 
 
