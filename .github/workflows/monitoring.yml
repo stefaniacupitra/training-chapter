@@ -128,11 +128,25 @@ jobs:
       - name: Complete Slack upload
         run: |
           # Realiza la llamada para completar la carga del archivo
-          curl -s -X POST \
+          response=$(curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_BOTS }}" \
             -H "Content-Type: application/json; text/html; charset=utf-8" \
             -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
-            https://slack.com/api/files.completeUploadExternal
+            https://slack.com/api/files.completeUploadExternal)
+          
+          echo "$response"
+          
+          # Extrae la URL de carga de la respuesta
+          url_private=$(echo "$response" | jq -r '.url_private')
+          
+          # Verifica si se obtuvo correctamente la URL de carga
+          if [ "$url_private" == "null" ]; then
+            echo "Error fetching upload URL: $response"
+            exit 1
+          fi
+
+          # Guarda la URL de carga para usarla en los siguientes pasos
+          echo "url_private=$url_private" >> $GITHUB_ENV
 
       - name: Public
         run: |
@@ -140,7 +154,7 @@ jobs:
           curl -s -X POST \
             -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_USER }}" \
             -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "file==${{ env.file_id }}" \
+            -d "file=${{ env.file_id }}" \
             https://slack.com/api/files.sharedPublicURL
 
 
