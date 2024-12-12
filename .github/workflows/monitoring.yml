@@ -129,7 +129,7 @@ jobs:
           
           # Verifica si se obtuvo correctamente la URL de carga
           if [ "$url_private" == "null" ]; then
-            echo "Error fetching upload URL: $response"
+            echo "Error fetching upload URL: $response_url"
             exit 1
           fi
 
