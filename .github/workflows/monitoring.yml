@@ -122,7 +122,7 @@ jobs:
           -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
           https://slack.com/api/files.completeUploadExternal)
           
-          echo "response_url"
+          echo "$response_url"
           
           # Extrae la URL de carga de la respuesta
           url_private=$(echo "response_url" | jq -r '.url_private')
