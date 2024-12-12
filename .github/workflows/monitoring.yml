@@ -117,10 +117,10 @@ jobs:
         run: |
           # Realiza la llamada para completar la carga del archivo
           response_url=$(curl -s -X POST \
-            -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_BOTS }}" \
-            -H "Content-Type: application/json; text/html; charset=utf-8" \
-            -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
-            https://slack.com/api/files.completeUploadExternal)
+          -H "Authorization: Bearer ${{ secrets.SLACK_TOKEN_BOTS }}" \
+          -H "Content-Type: application/json; text/html; charset=utf-8" \
+          -d '{"files":[{"id":"'"${{ env.file_id }}"'"}]}' \
+          https://slack.com/api/files.completeUploadExternal)
           
           echo "response_url"
           
