@@ -34,12 +34,6 @@ jobs:
       - name: Generate reports
         run: gradle reports
 
-      - name: List files in workspace
-        run: ls -alh
-
-      - name: List files in a specific directory
-        run: ls -alh target/site/serenity
-
       - name: Set current date and time
         id: date
         run: echo "current_date=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
