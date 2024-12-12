@@ -63,14 +63,14 @@ jobs:
           
           upload_url=$(echo "$response" | jq -r '.upload_url')
           if [ "$upload_url" == "null" ] || [ -z "$upload_url" ]; then
-            echo "Error: No se pudo obtener la URL de carga de Slack"
+            echo "Error: Failed to get Slack upload URL"
             exit 1
           fi
           echo "upload_url=$upload_url" >> $GITHUB_ENV
           
           file_id=$(echo "$response" | jq -r '.file_id')
           if [ "$file_id" == "null" ] || [ -z "$file_id" ]; then
-            echo "Error: No se pudo obtener el ID del archivo"
+            echo "Error: Could not get file ID"
             exit 1
           fi
           echo "file_id=$file_id" >> $GITHUB_ENV
@@ -96,12 +96,12 @@ jobs:
           
           url_private=$(echo "$response_url" | jq -r '.files[0].url_private')
           if [ "$url_private" == "null" ] || [ -z "$url_private" ]; then
-            echo "Error: No se pudo obtener la URL de carga completa"
+            echo "Error: Failed to get full upload URL"
             exit 1
           fi
           echo "url_private=$url_private" >> $GITHUB_ENV
 
-      - name: Notificar a Slack
+      - name: Notify Slack
         run: |
           if [ "${{ env.tests_failed }}" == "true" ]; then
             curl -X POST -H 'Content-type: application/json' \
