@@ -59,7 +59,7 @@ public class WebPage {
             .locatedBy(EXPECTED_TEST);
 
     public static final Target CLOSE_BANKS_INFORMATION_MODAL = Target.the("Botón X para cerrar modal de informativa de bancos")
-            .located(ByShadow.cssSelector("svg[role='img']", "#pop-convert-app"));
+            .located(ByShadow.cssSelector("svg[role='img']", "#pop-convert-app_ELIMINAR"));
     public static final Target WIDGET_PDP_DPRIMERO = Target.the("Abrir widget en PDP aliado DPrimero")
             .located(ByShadow.cssSelector(".widget-body-alt","bdb-ec4-financing-method[type='widget']", ".hydrated"));
     public static final Target TEXT_EXPECTED_WIDGET_PDP_DPRIMERO = Target.the("Texto esperado widget en PDP aliado DPrimero")
