@@ -4,6 +4,30 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      execution:
+        description: "Tipo de ejecución"
+        required: true
+        type: choice
+        options:
+          - Post-despliegue
+          - Validación ambiente
+      id:
+        description: "ID del release (Post-despliegue)"
+        required: false
+        default: 'NA'
+        type: string
+      date:
+        description: "Fecha de la ejecución (Validación ambiente)"
+        required: false
+        default: 'NA'
+        type: string
+      objective:
+        description: "Objetivo de la ejecución (Validación ambiente)"
+        required: false
+        default: 'NA'
+        type: string
   schedule:
     - cron: "0 21 * * Tue,Wed,Thu"
 
