@@ -62,6 +62,12 @@ jobs:
         id: date
         run: echo "current_date=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
 
+      - name: Upload Serenity report for sharing
+        uses: actions/upload-artifact@v4
+        with:
+          name: serenity-report-${{ env.current_date }}
+          path: target/site/serenity/serenity-summary.html
+
       - name: Calculate file size in bytes
         id: calculate-size
         run: |
