@@ -54,7 +54,7 @@ jobs:
 
           echo "Edad calculada: $EDAD_FORMATO"
           echo "edad=$EDAD_FORMATO" >> $GITHUB_OUTPUT
-          echo "anios=$AnOS" >> $GITHUB_OUTPUT
+          echo "anios=$ANOS" >> $GITHUB_OUTPUT
 
   clasificar-etapa:
     runs-on: ubuntu-latest
