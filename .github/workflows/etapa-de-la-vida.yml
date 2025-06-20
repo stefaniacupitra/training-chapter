@@ -68,13 +68,13 @@ jobs:
           echo "Edad recibida: $EDAD"
 
           if [ "$ANOS" -le ${{ vars.LIM_NINEZ }} ]; then
-            echo "Etapa de vida: Niñez"
+            echo "Etapa de vida: Niñez (5-13)"
           elif [ "$ANOS" -le ${{ vars.LIM_ADOLESCENCIA }} ]; then
-            echo "Etapa de vida: Adolescencia"
+            echo "Etapa de vida: Adolescencia (14-17)"
           elif [ "$ANOS" -le ${{ vars.LIM_ADULTO_JOVEN }} ]; then
-            echo "Etapa de vida: Adulto joven"
+            echo "Etapa de vida: Adulto joven (18-35)"
           elif [ "$ANOS" -le ${{ vars.LIM_ADULTO }} ]; then
-            echo "Etapa de vida: Adulto"
+            echo "Etapa de vida: Adulto (36-64)"
           else
-            echo "Etapa de vida: Tercera edad"
+            echo "Etapa de vida: Tercera edad (65 o mas)"
           fi
