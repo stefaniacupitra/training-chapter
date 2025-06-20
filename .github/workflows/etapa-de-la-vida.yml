@@ -50,7 +50,7 @@ jobs:
             MESES=$((MESES + 12))
           fi
 
-          EDAD_FORMATO="$ANOS años, $MESES meses, $DIAS días"
+          EDAD_FORMATO="$ANOS anos, $MESES meses, $DIAS días"
 
           echo "Edad calculada: $EDAD_FORMATO"
           echo "edad=$EDAD_FORMATO" >> $GITHUB_OUTPUT
