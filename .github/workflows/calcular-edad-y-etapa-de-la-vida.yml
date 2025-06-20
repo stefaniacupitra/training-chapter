@@ -1,9 +1,6 @@
-name: Clasificar etapa de vida
+name: calcular-edad-y-etapa-de-la-vida
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
     inputs:
       dia:
