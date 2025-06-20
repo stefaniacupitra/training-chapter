@@ -62,8 +62,8 @@ jobs:
     steps:
       - name: Clasificar etapa de la vida
         run: |
-          EDAD=${{ needs.calcular-edad.outputs.edad_actual }}
-          ANOS=${{ needs.calcular-edad.outputs.edad_anios }}
+          EDAD="${{ needs.calcular-edad.outputs.edad_actual }}"
+          ANOS="${{ needs.calcular-edad.outputs.edad_anios }}"
 
           echo "Edad recibida: $EDAD"
 
