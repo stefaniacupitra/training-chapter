@@ -1,9 +1,6 @@
 name: Clasificar etapa de vida
 
 on:
-  push:
-    branches:
-      - master
   workflow_dispatch:
     inputs:
       dia:
