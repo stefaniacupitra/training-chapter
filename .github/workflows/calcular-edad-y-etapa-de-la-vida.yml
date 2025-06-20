@@ -35,7 +35,17 @@ jobs:
           ANOS=$(($(date +%Y) - ANIO))
           MESES=$(($(date +%m) - MES))
           DIAS=$(($(date +%d) - DIA))
+          
+          # Ajustar negativos
+          if [ "$DIAS" -lt 0 ]; then
+            MESES=$((MESES - 1))
+            DIAS=$((DIAS + 30))
+          fi
 
+          if [ "$MESES" -lt 0 ]; then
+            ANOS=$((ANOS - 1))
+            MESES=$((MESES + 12))
+          fi
 
           EDAD_FORMATO="$ANOS años, $MESES meses, $DIAS días"
 
