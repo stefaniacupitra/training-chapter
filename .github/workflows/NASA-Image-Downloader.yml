@@ -29,7 +29,7 @@ name: NASA Image Downloader
 on:
   push:
     branches:
-      - test/**
+      - test/
 
 jobs:
   download-images:
