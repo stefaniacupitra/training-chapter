@@ -19,7 +19,7 @@
 #LIM_ADULTO_JOVEN = 35
 #LIM_ADULTO = 64
 
-name: calcular-edad-y-etapa-de-la-vida
+name: calcular-edad-y-etapa-de-la-vida-workflow
 
 on:
   workflow_dispatch:
