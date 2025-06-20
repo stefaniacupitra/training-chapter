@@ -1,0 +1,98 @@
+#Crear un pipeline que reciba como inputs el año mes y día de nacimiento
+#y con base a esos datos calcule la edad actual de la persona (Formato: 27 años, 9 meses, 17 días)
+#y luego use esa edad para clasificar a la persona en la etapa de la vida que aplique.
+
+#La ejecución fue exitosa en Github actions
+#El workflow tiene un nombre
+#El workflow usa el runner de ubuntu-latest
+#El workflow usa el evento workflow_dispatch
+#El workflow tiene tres inputs, día, mes y año de nacimiento
+#El workflow usa las variables de entorno del repositorio (Rangos de edades)
+#El workflow usa dos jobs y un step en cada job
+#Los steps y los jobs tienen un nombre
+#El workflow es claro, entendible y efectivo
+#El primer job debe tener un output el cual se debe usar en el segundo job
+#Variables de repositorio:
+
+#LIM_NINEZ = 13
+#LIM_ADOLESCENCIA = 17
+#LIM_ADULTO_JOVEN = 35
+#LIM_ADULTO = 64
+
+name: calcular-edad-y-etapa-de-la-vida
+
+on:
+  workflow_dispatch:
+    inputs:
+      dia:
+        description: 'Día de nacimiento'
+        required: true
+      mes:
+        description: 'Mes de nacimiento'
+        required: true
+      anio:
+        description: 'Año de nacimiento'
+        required: true
+
+jobs:
+  calcular-edad:
+    runs-on: ubuntu-latest
+    outputs:
+      edad_actual: ${{ steps.calcular.outputs.edad }}
+      edad_anios: ${{ steps.calcular.outputs.anios }}
+
+    steps:
+      - name: Calcular edad actual
+        id: calcular
+        run: |
+          DIA=${{ github.event.inputs.dia }}
+          MES=${{ github.event.inputs.mes }}
+          ANIO=${{ github.event.inputs.anio }}
+
+          FECHA_NAC="$ANIO-$MES-$DIA"
+          FECHA_ACTUAL=$(date +%Y-%m-%d)
+
+          # Calcular diferencia usando fecha
+          ANOS=$(($(date +%Y) - ANIO))
+          MESES=$(($(date +%m) - MES))
+          DIAS=$(($(date +%d) - DIA))
+          
+          # Ajustar negativos
+          if [ "$DIAS" -lt 0 ]; then
+            MESES=$((MESES - 1))
+            DIAS=$((DIAS + 30))
+          fi
+
+          if [ "$MESES" -lt 0 ]; then
+            ANOS=$((ANOS - 1))
+            MESES=$((MESES + 12))
+          fi
+
+          EDAD_FORMATO="$ANOS años, $MESES meses, $DIAS días"
+
+          echo "Edad calculada: $EDAD_FORMATO"
+          echo "edad=$EDAD_FORMATO" >> $GITHUB_OUTPUT
+          echo "anios=$ANOS" >> $GITHUB_OUTPUT
+
+  clasificar-etapa:
+    runs-on: ubuntu-latest
+    needs: calcular-edad
+    steps:
+      - name: Clasificar etapa de la vida
+        run: |
+          EDAD="${{ needs.calcular-edad.outputs.edad_actual }}"
+          ANOS="${{ needs.calcular-edad.outputs.edad_anios }}"
+
+          echo "Edad recibida: $EDAD"
+
+          if [ "$ANOS" -le ${{ vars.LIM_NINEZ }} ]; then
+            echo "Etapa de vida: Niñez (5-13)"
+          elif [ "$ANOS" -le ${{ vars.LIM_ADOLESCENCIA }} ]; then
+            echo "Etapa de vida: Adolescencia (14-17)"
+          elif [ "$ANOS" -le ${{ vars.LIM_ADULTO_JOVEN }} ]; then
+            echo "Etapa de vida: Adulto joven (18-35)"
+          elif [ "$ANOS" -le ${{ vars.LIM_ADULTO }} ]; then
+            echo "Etapa de vida: Adulto (36-64)"
+          else
+            echo "Etapa de vida: Tercera edad (65 o mas)"
+          fi
