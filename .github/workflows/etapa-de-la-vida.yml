@@ -1,0 +1,78 @@
+name: Clasificar etapa de vida
+
+on:
+  workflow_dispatch:
+    inputs:
+      dia:
+        description: 'Día de nacimiento'
+        required: true
+      mes:
+        description: 'Mes de nacimiento'
+        required: true
+      anio:
+        description: 'Año de nacimiento'
+        required: true
+
+jobs:
+  calcular-edad:
+    runs-on: ubuntu-latest
+    outputs:
+      edad_actual: ${{ steps.calcular.outputs.edad }}
+      edad_anios: ${{ steps.calcular.outputs.anios }}
+
+    steps:
+      - name: Calcular edad actual
+        id: calcular
+        run: |
+          DIA=${{ github.event.inputs.dia }}
+          MES=${{ github.event.inputs.mes }}
+          ANIO=${{ github.event.inputs.anio }}
+
+          FECHA_NAC="$ANIO-$MES-$DIA"
+          FECHA_ACTUAL=$(date +%Y-%m-%d)
+
+          # Calcular diferencia usando fecha
+          AÑOS=$(($(date +%Y) - ANIO))
+          MESES=$(($(date +%m) - MES))
+          DIAS=$(($(date +%d) - DIA))
+
+          # Ajustar negativos
+          if [ "$DIAS" -lt 0 ]; then
+            MESES=$((MESES - 1))
+            DIAS=$((DIAS + 30))
+          fi
+
+          if [ "$MESES" -lt 0 ]; then
+            AÑOS=$((AÑOS - 1))
+            MESES=$((MESES + 12))
+          fi
+
+          EDAD_FORMATO="$AÑOS años, $MESES meses, $DIAS días"
+
+          echo "Edad calculada: $EDAD_FORMATO"
+          echo "edad=$EDAD_FORMATO" >> $GITHUB_OUTPUT
+          echo "anios=$AÑOS" >> $GITHUB_OUTPUT
+
+  clasificar-etapa:
+    runs-on: ubuntu-latest
+    needs: calcular-edad
+
+    steps:
+      - name: Clasificar etapa de la vida
+        run: |
+          EDAD=${{ needs.calcular-edad.outputs.edad_actual }}
+          AÑOS=${{ needs.calcular-edad.outputs.edad_anios }}
+
+          echo "Edad recibida: $EDAD"
+
+          if [ "$AÑOS" -le ${{ vars.LIM_NINEZ }} ]; then
+            echo "Etapa de vida: Niñez"
+          elif [ "$AÑOS" -le ${{ vars.LIM_ADOLESCENCIA }} ]; then
+            echo "Etapa de vida: Adolescencia"
+          elif [ "$AÑOS" -le ${{ vars.LIM_ADULTO_JOVEN }} ]; then
+            echo "Etapa de vida: Adulto joven"
+          elif [ "$AÑOS" -le ${{ vars.LIM_ADULTO }} ]; then
+            echo "Etapa de vida: Adulto"
+          else
+            echo "Etapa de vida: Tercera edad"
+          fi
